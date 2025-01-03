@@ -1,0 +1,174 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e0f7fa;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    position: relative;
+}
+#village-status {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
+.button-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+}
+.button {
+    padding: 10px 20px;
+    margin: 10px 0;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.button:hover {
+    background-color: #0056b3;
+}
+#village {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    width: 800px;
+    height: 800px;
+    background-color: #c8e6c9;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden; /* Ensure humans stay within the box */
+}
+.house {
+    width: 50px;
+    height: 50px;
+    background-color: #ffcc80;
+    border: 2px solid #ffab40;
+    border-radius: 5px;
+    margin: 5px;
+    position: relative;
+}
+.house.on-fire {
+    background-color: #ff7043;
+    border-color: #d84315;
+    animation: burn 1s infinite;
+}
+.human {
+    width: 20px;
+    height: 40px;
+    background-color: #ff5722;
+    border-radius: 10px;
+    position: absolute;
+    animation: wander 10s infinite;
+}
+.human::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    background-color: #ffcc80;
+    border-radius: 50%;
+    position: absolute;
+    top: -20px;
+    left: 0;
+}
+.human .left-hand, .human .right-hand {
+    width: 5px;
+    height: 20px;
+    background-color: #ffcc80;
+    position: absolute;
+    top: 10px;
+    transform-origin: top;
+}
+.human .left-hand {
+    left: -5px;
+    animation: wave 2s infinite;
+}
+.human .right-hand {
+    right: -5px;
+    animation: wave 2s infinite;
+}
+.human.dancing .left-hand, .human.dancing .right-hand {
+    animation: dance 1s infinite;
+}
+.soldier {
+    background-color: grey;
+}
+.soldier .left-hand {
+    background-color: #ffcc80;
+}
+.soldier .sword {
+    content: '';
+    width: 5px;
+    height: 20px;
+    background-color: silver;
+    position: absolute;
+    top: 10px;
+    left: -10px;
+    transform: rotate(45deg);
+}
+.soldier.attacking {
+    background-color: darkgrey;
+}
+.attacker {
+    width: 20px;
+    height: 40px;
+    background-color: red;
+    border-radius: 10px;
+    position: absolute;
+    animation: wander 10s infinite;
+}
+.attacker::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    background-color: #ffcc80;
+    border-radius: 50%;
+    position: absolute;
+    top: -20px;
+    left: 0;
+}
+.castle {
+    width: 100px;
+    height: 100px;
+    background-color: #9e9e9e;
+    border: 3px solid #757575;
+    border-radius: 10px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+@keyframes wander {
+    0% { top: 10%; left: 10%; }
+    25% { top: 10%; left: 90%; }
+    50% { top: 90%; left: 90%; }
+    75% { top: 90%; left: 10%; }
+    100% { top: 10%; left: 10%; }
+}
+@keyframes wave {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(45deg); }
+}
+@keyframes dance {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(-45deg); }
+}
+@keyframes burn {
+    0%, 100% { box-shadow: 0 0 10px rgba(255, 87, 34, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(255, 87, 34, 1); }
+}
