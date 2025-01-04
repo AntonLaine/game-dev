@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horror Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="score">Score: 0</div>
+        <div id="player"></div>
+        <div id="game-over">Game Over!<br>Your score: <span id="final-score"></span><br><button onclick="restartGame()">Restart</button></div>
+        <div id="inventory">Inventory: <span id="inventory-items"></span></div>
+        <div id="upgrade-screen">
+            <p>Choose an upgrade:</p>
+            <button onclick="chooseUpgrade('extra-life')">Extra Life</button>
+            <button onclick="chooseUpgrade('shield')">Activate Shield</button>
+            <button onclick="chooseUpgrade('double-points')">Double Points</button>
+            <button onclick="showAbilitiesScreen()">Abilities</button>
+        </div>
+        <div id="abilities-screen">
+            <p>Choose an ability:</p>
+            <button onclick="chooseAbility('speed')">Increase Speed</button>
+            <button onclick="chooseAbility('freeze')">Freeze Enemies</button>
+            <button onclick="chooseAbility('invincibility')">Invincibility</button>
+            <button onclick="backToUpgradeScreen()">Back</button>
+        </div>
+    </div>
+    <script src="scripts.js"></script>
+</body>
+</html>
