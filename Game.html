@@ -3,11 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evolution Game</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Game Simulation</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+        #bounceCount {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 20px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px;
+            border-radius: 5px;
+        }
+    </style>
+    <!-- ...existing code... -->
 </head>
 <body>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <script src="scripts.js"></script>
+    <div id="bounceCount">Bounces: 0</div>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const context = canvas.getContext('2d');
+        const bounceCountElement = document.getElementById('bounceCount');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const circles = [];
+        const particles = [];
+        const circleRadius = 5;
+        let bounceCount = 0;
+
+        function isColliding(circle1, circle2) {
+            const dx = circle1.x - circle2.x;
+            const dy = circle1.y - circle2.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            return distance < circleRadius * 2;
+        }
+
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        function getRainbowColor() {
+            const hue = Math.floor(Math.random() * 360);
+            return `hsl(${hue}, 100%, 50%)`;
+        }
+
+        function createCollisionEffect(x, y) {
+            for (let i = 0; i < 10; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    dx: (Math.random() - 0.5) * 2,
+                    dy: (Math.random() - 0.5) * 2,
+                    radius: Math.random() * 3 + 1,
+                    color: getRainbowColor(),
+                    life: 50
+                });
+            }
+        }
+
+        function createCircle() {
+            let newCircle;
+            let overlapping;
+            do {
+                overlapping = false;
+                newCircle = {
+                    x: Math.random() * (canvas.width - circleRadius * 2) + circleRadius,
+                    y: Math.random() * (canvas.height - circleRadius * 2) + circleRadius,
+                    dx: (Math.random() - 0.5) * 4,
+                    dy: (Math.random() - 0.5) * 4,
+                    color: getRandomColor()
+                };
+                for (let i = 0; i < circles.length; i++) {
+                    if (isColliding(newCircle, circles[i])) {
+                        overlapping = true;
+                        break;
+                    }
+                }
+            } while (overlapping);
+            return newCircle;
+        }
+
+        for (let i = 0; i < 300; i++) {
+            circles.push(createCircle());
+        }
+
+        function draw() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            circles.forEach((circle, index) => {
+                context.beginPath();
+                context.arc(circle.x, circle.y, circleRadius, 0, Math.PI * 2, false);
+                context.fillStyle = circle.color;
+                context.fill();
+                context.closePath();
+
+                circle.x += circle.dx;
+                circle.y += circle.dy;
+
+                if (circle.x + circleRadius > canvas.width || circle.x - circleRadius < 0) {
+                    circle.dx = -circle.dx;
+                    circle.color = getRandomColor();
+                    bounceCount++;
+                }
+                if (circle.y + circleRadius > canvas.height || circle.y - circleRadius < 0) {
+                    circle.dy = -circle.dy;
+                    circle.color = getRandomColor();
+                    bounceCount++;
+                }
+
+                for (let j = index + 1; j < circles.length; j++) {
+                    const other = circles[j];
+                    if (isColliding(circle, other)) {
+                        circle.dx = -circle.dx;
+                        circle.dy = -circle.dy;
+                        other.dx = -other.dx;
+                        other.dy = -other.dy;
+                        circle.color = getRandomColor();
+                        other.color = getRandomColor();
+                        bounceCount++;
+                        createCollisionEffect(circle.x, circle.y);
+                    }
+                }
+            });
+
+            particles.forEach((particle, index) => {
+                context.beginPath();
+                context.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2, false);
+                context.fillStyle = particle.color;
+                context.fill();
+                context.closePath();
+
+                particle.x += particle.dx;
+                particle.y += particle.dy;
+                particle.life--;
+
+                if (particle.life <= 0) {
+                    particles.splice(index, 1);
+                }
+            });
+
+            bounceCountElement.textContent = `Bounces: ${bounceCount}`;
+            requestAnimationFrame(draw);
+        }
+
+        draw();
+    </script>
+    <!-- ...existing code... -->
 </body>
 </html>
