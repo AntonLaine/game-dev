@@ -3,90 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horror Game</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Strategy Game</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
 </head>
 <body>
-    <div id="player1-health">Player 1 Health: 100</div>
-    <div id="player2-health">Player 2 Health: 100</div>
-    <div id="enemy-health">Enemy Health: 100</div>
-    <div class="game-board">
-        <div class="card player-card hidden" data-framework="" draggable="true">
-            <div class="card-inner">
-                <div class="card-front"></div>
-                <div class="card-back">?</div>
-            </div>
-        </div>
-        <div class="card player-card hidden" data-framework="" draggable="true">
-            <div class="card-inner">
-                <div class="card-front"></div>
-                <div class="card-back">?</div>
-            </div>
-        </div>
-        <div class="card player-card hidden" data-framework="" draggable="true">
-            <div class="card-inner">
-                <div class="card-front"></div>
-                <div class="card-back">?</div>
-            </div>
-        </div>
-        <div class="card player-card hidden" data-framework="" draggable="true">
-            <div class="card-inner">
-                <div class="card-front"></div>
-                <div class="card-back">?</div>
-            </div>
-        </div>
-        <div class="card enemy-card hidden" data-framework="" draggable="true">
-            <div class="card-inner">
-                <div class="card-front"></div>
-                <div class="card-back">?</div>
-            </div>
-        </div>
-        <div class="card enemy-card hidden" data-framework="" draggable="true">
-            <div class="card-inner">
-                <div class="card-front"></div>
-                <div class="card-back">?</div>
-            </div>
-        </div>
-        <div class="card enemy-card hidden" data-framework="" draggable="true">
-            <div class="card-inner">
-                <div class="card-front"></div>
-                <div class="card-back">?</div>
-            </div>
-        </div>
-        <div class="card enemy-card hidden" data-framework="" draggable="true">
-            <div class="card-inner">
-                <div class="card-front"></div>
-                <div class="card-back">?</div>
-            </div>
-        </div>
-        <div class="card hidden" data-framework="fireball" data-description="Deal 15 damage and set the enemy on fire" data-symbol="🔥" draggable="true">
-            <div class="card-inner">
-                <div class="card-front">Fireball</div>
-                <div class="card-back">?</div>
-            </div>
-        </div>
-        <div class="card hidden" data-framework="shield" data-description="Gain 10 shield" data-symbol="🛡️" draggable="true">
-            <div class="card-inner">
-                <div class="card-front">Shield</div>
-                <div class="card-back">?</div>
-            </div>
-        </div>
-        <div class="card hidden" data-framework="lightning" data-description="Deal 20 damage" data-symbol="⚡" draggable="true">
-            <div class="card-inner">
-                <div class="card-front">Lightning</div>
-                <div class="card-back">?</div>
-            </div>
-        </div>
-        <div class="card hidden" data-framework="heal" data-description="Heal 20 health" data-symbol="❤️" draggable="true">
-            <div class="card-inner">
-                <div class="card-front">Heal</div>
-                <div class="card-back">?</div>
-            </div>
-        </div>
-        <!-- Add more cards as needed -->
-    </div>
-    <div id="player-ball" class="ball">100</div>
-    <div id="enemy-ball" class="ball">100</div>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
     <script src="scripts.js"></script>
 </body>
 </html>
