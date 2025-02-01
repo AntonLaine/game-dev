@@ -14,62 +14,59 @@ const cube = new THREE.Mesh(geometry, material);
 scene.add(cube);
 
 // Add a green floor
-const floorGeometry = new THREE.BoxGeometry(50, 0.1, 50);
+const floorGeometry = new THREE.BoxGeometry(100, 0.1, 100);
 const floorMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 const floor = new THREE.Mesh(floorGeometry, floorMaterial);
 floor.position.set(0, -0.5, 0);
 scene.add(floor);
 
-// Add parkour platforms
-const parkourPlatforms = [];
-const platformPositions = [
-    { x: -8, y: 1, z: 0 },
-    { x: -6, y: 2, z: 0 },
-    { x: -4, y: 3, z: 0 },
-    { x: -2, y: 4, z: 0 },
-    { x: 0, y: 5, z: 0 },
-    { x: 2, y: 4, z: 0 },
-    { x: 4, y: 3, z: 0 },
-    { x: 6, y: 2, z: 0 },
-    { x: 8, y: 1, z: 0 },
-    { x: 10, y: 0, z: 0 },
-    { x: 12, y: 1, z: 0 },
-    { x: 14, y: 2, z: 0 },
-    { x: 16, y: 3, z: 0 }
-];
-platformPositions.forEach(pos => {
-    const platformGeometry = new THREE.BoxGeometry(2, 0.1, 2);
-    const platformMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
-    const platform = new THREE.Mesh(platformGeometry, platformMaterial);
-    platform.position.set(pos.x, pos.y, pos.z);
-    scene.add(platform);
-    parkourPlatforms.push(platform);
-});
-
-// Add collectible coins
-const collectibleItems = [];
-const itemPositions = [
-    { x: -6, y: 2.5, z: 0 },
-    { x: 0, y: 5.5, z: 0 },
-    { x: 6, y: 2.5, z: 0 },
-    { x: 12, y: 1.5, z: 0 },
-    { x: 16, y: 3.5, z: 0 }
-];
-itemPositions.forEach(pos => {
-    const itemGeometry = new THREE.SphereGeometry(0.5, 32, 32);
-    const itemMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-    const collectibleItem = new THREE.Mesh(itemGeometry, itemMaterial);
-    collectibleItem.position.set(pos.x, pos.y, pos.z);
-    scene.add(collectibleItem);
-    collectibleItems.push(collectibleItem);
-});
-
-// Add a shop
+// Add a town with a shop and a house
 const shopGeometry = new THREE.BoxGeometry(3, 3, 3);
-const shopMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+const shopMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
 const shop = new THREE.Mesh(shopGeometry, shopMaterial);
 shop.position.set(20, 1.5, 0);
 scene.add(shop);
+
+const houseGeometry = new THREE.BoxGeometry(10, 10, 10);
+const houseMaterial = new THREE.MeshBasicMaterial({ color: 0x8B4513 });
+const house = new THREE.Mesh(houseGeometry, houseMaterial);
+house.position.set(30, 5, 0);
+scene.add(house);
+
+const doorGeometry = new THREE.BoxGeometry(2, 4, 0.1);
+const doorMaterial = new THREE.MeshBasicMaterial({ color: 0x654321 });
+const door = new THREE.Mesh(doorGeometry, doorMaterial);
+door.position.set(30, 2, 5.05);
+scene.add(door);
+
+const houseFloorGeometry = new THREE.BoxGeometry(10, 0.1, 10);
+const houseFloorMaterial = new THREE.MeshBasicMaterial({ color: 0x8B4513 });
+const houseFloor = new THREE.Mesh(houseFloorGeometry, houseFloorMaterial);
+houseFloor.position.set(30, 0, 0);
+scene.add(houseFloor);
+
+// Add NPCs moving around
+const npcs = [];
+const npcGeometry = new THREE.BoxGeometry(1, 2, 1);
+const npcMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+
+for (let i = 0; i < 10; i++) { // Increased number of NPCs
+    const npc = new THREE.Mesh(npcGeometry, npcMaterial);
+    npc.position.set(Math.random() * 40 - 20, 1, Math.random() * 40 - 20);
+    npc.userData = { direction: Math.random() * Math.PI * 2 };
+    scene.add(npc);
+    npcs.push(npc);
+}
+
+function moveNPCs() {
+    npcs.forEach(npc => {
+        npc.position.x += Math.sin(npc.userData.direction) * 0.05;
+        npc.position.z += Math.cos(npc.userData.direction) * 0.05;
+        if (Math.random() < 0.01) {
+            npc.userData.direction += (Math.random() - 0.5) * Math.PI / 4;
+        }
+    });
+}
 
 // Create shop GUI
 const shopGUI = document.createElement('div');
@@ -113,6 +110,92 @@ function buyItem(item) {
         console.log('Not enough coins');
     }
 }
+
+// Teleport to a box-like place when walking into the door
+const boxGeometry = new THREE.BoxGeometry(20, 20, 20); // Made the box larger
+const boxMaterial = new THREE.MeshBasicMaterial({ color: 0x808080, side: THREE.BackSide });
+const box = new THREE.Mesh(boxGeometry, boxMaterial);
+box.position.set(1000, 10, 1000);
+scene.add(box);
+
+const boxFloorGeometry = new THREE.BoxGeometry(20, 0.1, 20);
+const boxFloorMaterial = new THREE.MeshBasicMaterial({ color: 0x808080 });
+const boxFloor = new THREE.Mesh(boxFloorGeometry, boxFloorMaterial);
+boxFloor.position.set(1000, -0.5, 1000);
+scene.add(boxFloor);
+
+const boxDoorGeometry = new THREE.BoxGeometry(2, 4, 0.1);
+const boxDoorMaterial = new THREE.MeshBasicMaterial({ color: 0x654321 });
+const boxDoor = new THREE.Mesh(boxDoorGeometry, boxDoorMaterial);
+boxDoor.position.set(1000, 2, 995.05);
+scene.add(boxDoor);
+
+function teleportInsideBox() {
+    cube.position.set(1000, 1, 1000);
+}
+
+function teleportOutsideBox() {
+    cube.position.set(30, 1, 0);
+}
+
+// Add control panel with passcode
+const controlPanel = document.createElement('div');
+controlPanel.style.position = 'absolute';
+controlPanel.style.top = '50%';
+controlPanel.style.left = '50%';
+controlPanel.style.transform = 'translate(-50%, -50%)';
+controlPanel.style.padding = '20px';
+controlPanel.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+controlPanel.style.color = 'white';
+controlPanel.style.display = 'none';
+controlPanel.innerHTML = `
+    <h2>Control Panel</h2>
+    <p>Enter passcode: <input type="text" id="passcode" /></p>
+    <button onclick="checkPasscode()">Submit</button>
+    <div id="controlOptions" style="display: none;">
+        <button onclick="toggleFlying()">Toggle Flying</button>
+        <button onclick="addNPC()">Add NPC</button>
+        <button onclick="removeNPC()">Remove NPC</button>
+    </div>
+`;
+document.body.appendChild(controlPanel);
+
+let flying = false;
+
+function checkPasscode() {
+    const passcode = document.getElementById('passcode').value;
+    if (passcode === '9999') {
+        document.getElementById('controlOptions').style.display = 'block';
+    } else {
+        alert('Incorrect passcode');
+    }
+}
+
+function toggleFlying() {
+    flying = !flying;
+    console.log(`Flying ${flying ? 'enabled' : 'disabled'}`);
+}
+
+function addNPC() {
+    const npc = new THREE.Mesh(npcGeometry, npcMaterial);
+    npc.position.set(Math.random() * 40 - 20, 1, Math.random() * 40 - 20);
+    npc.userData = { direction: Math.random() * Math.PI * 2 };
+    scene.add(npc);
+    npcs.push(npc);
+}
+
+function removeNPC() {
+    if (npcs.length > 0) {
+        const npc = npcs.pop();
+        scene.remove(npc);
+    }
+}
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'p') {
+        controlPanel.style.display = 'block';
+    }
+});
 
 // Position the camera to follow the cube
 camera.position.set(0, 2, 5);
@@ -162,6 +245,14 @@ function updateMovement() {
         isJumping = true;
         velocityY = jumpSpeed;
     }
+    if (flying) {
+        if (keys[' ']) {
+            cube.position.y += speed;
+        }
+        if (keys['Shift']) {
+            cube.position.y -= speed;
+        }
+    }
 }
 
 // Animation loop with gravity and collision detection
@@ -169,60 +260,42 @@ function animate() {
     requestAnimationFrame(animate);
 
     updateMovement();
+    moveNPCs();
 
     // Apply gravity
-    if (isJumping) {
+    if (isJumping && !flying) {
         velocityY -= gravity;
         cube.position.y += velocityY;
     }
 
-    // Check for collision with floor or parkour platforms
+    // Check for collision with floor
     let isOnPlatform = false;
     if (cube.position.y <= 0) {
         cube.position.y = 0;
         velocityY = 0;
         isJumping = false;
         isOnPlatform = true;
-    } else {
-        parkourPlatforms.forEach(platform => {
-            if (cube.position.y <= platform.position.y + 0.5 &&
-                cube.position.y >= platform.position.y - 0.5 &&
-                cube.position.x >= platform.position.x - 1 &&
-                cube.position.x <= platform.position.x + 1 &&
-                cube.position.z >= platform.position.z - 1 &&
-                cube.position.z <= platform.position.z + 1) {
-                if (velocityY < 0) {
-                    cube.position.y = platform.position.y + 0.5;
-                    velocityY = 0;
-                    isJumping = false;
-                    isOnPlatform = true;
-                } else if (velocityY > 0) {
-                    cube.position.y = platform.position.y - 0.5;
-                    velocityY = 0;
-                }
-            }
-        });
     }
 
     // If not on any platform, apply gravity
-    if (!isOnPlatform) {
+    if (!isOnPlatform && !flying) {
         velocityY -= gravity;
         cube.position.y += velocityY;
     }
 
-    // Check for collision with collectible items
-    collectibleItems.forEach((item, index) => {
-        if (cube.position.distanceTo(item.position) < 1) {
-            scene.remove(item);
-            collectibleItems.splice(index, 1);
-            coinsCollected++;
-            console.log(`Coins collected: ${coinsCollected}`);
-        }
-    });
-
     // Check for collision with shop
     if (cube.position.distanceTo(shop.position) < 2) {
         openShop();
+    }
+
+    // Check for collision with house door
+    if (cube.position.distanceTo(door.position) < 2) {
+        teleportInsideBox();
+    }
+
+    // Check for collision with box door
+    if (cube.position.distanceTo(boxDoor.position) < 2) {
+        teleportOutsideBox();
     }
 
     // Update camera position
