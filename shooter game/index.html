@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battle Royale 3D</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="hud">
+            <div id="health-bar">
+                <div id="health-fill"></div>
+                <span>HEALTH</span>
+            </div>
+            <div id="ammo">AMMO: 30/90</div>
+            <div id="players-left">PLAYERS: 100</div>
+            <div id="kill-count">KILLS: 0</div>
+            <div id="zone-timer">ZONE: 2:00</div>
+        </div>
+        <div id="crosshair">+</div>
+        <div id="game-over" class="hidden">
+            <h2>GAME OVER</h2>
+            <p>RANK: <span id="final-rank">#1</span></p>
+            <p>KILLS: <span id="final-kills">0</span></p>
+            <button id="restart">PLAY AGAIN</button>
+        </div>
+    </div>
+    
+    <!-- Three.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
