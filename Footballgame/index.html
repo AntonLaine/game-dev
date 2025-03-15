@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Football Game</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+        #controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 12px;
+            border-radius: 5px;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 12px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        button {
+            padding: 8px 12px;
+            margin: 5px;
+            cursor: pointer;
+            background: #3366ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:hover {
+            background: #2255ee;
+        }
+        #animation-status {
+            font-weight: bold;
+            margin: 5px;
+        }
+        .instructions {
+            margin-top: 8px;
+            font-size: 0.9em;
+            color: #444;
+        }
+        .charge-meter {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .charge-level {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #3366ff, #ff3366);
+            transition: width 0.1s linear;
+        }
+        #blocker {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        #instructions {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+        }
+        #instructions h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        #instructions p {
+            font-size: 16px;
+            max-width: 400px;
+            line-height: 1.5;
+        }
+        
+        /* Remove play controls button styles */
+        #play-controls button {
+            display: none;
+        }
+        
+        @keyframes pulse-play {
+            0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 255, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+        }
+        
+        #play-controls button:first-child {
+            animation: pulse-play 2s infinite;
+        }
+        
+        /* Ensure pause overlay is visible */
+        #pause-overlay {
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Controls overlay styles */
+        #controls-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 600px;
+            background: rgba(0,0,0,0.85);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            font-family: Arial, sans-serif;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        
+        #controls-overlay h2 {
+            color: #3366ff;
+            text-align: center;
+            margin-top: 0;
+        }
+        
+        #controls-overlay .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .controls-section {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 5px;
+        }
+        
+        .controls-section h3 {
+            margin-top: 0;
+            color: #ffcc00;
+        }
+        
+        .key-row {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        
+        .key {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin-right: 10px;
+            font-weight: bold;
+            min-width: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="blocker">
+        <div id="instructions" style="cursor: pointer;">
+            <h1>Click to Play</h1>
+            <p>W - Move forward<br>
+               S - Move backward<br>
+               A - Move left<br>
+               D - Move right<br>
+               Mouse - Look around<br>
+               Left Click - Kick the ball<br>
+               E - Change Shot Type<br>
+               F - Heel Flick Dash<br>
+               ESC - Exit pointer lock</p>
+        </div>
+    </div>
+    
+    <div id="controls">
+        <button id="toggle-anim-btn">Stop Animation</button>
+        <div id="animation-status">Idle</div>
+    </div>
+    <div id="info">
+        <div class="instructions">
+            Press and hold W to run<br>
+            Release W to return to idle<br>
+            Hold left mouse button to charge kick<br>
+            Release to execute kick
+        </div>
+    </div>
+    <div id="charge-meter" class="charge-meter">
+        <div id="charge-level" class="charge-level"></div>
+    </div>
+    
+    <!-- Add controls overlay -->
+    <div id="controls-overlay">
+        <button class="close-button">&times;</button>
+        <h2>Game Controls</h2>
+        <div class="controls-grid">
+            <div class="controls-section">
+                <h3>Movement</h3>
+                <div class="key-row"><span class="key">W</span> Move forward</div>
+                <div class="key-row"><span class="key">S</span> Move backward</div>
+                <div class="key-row"><span class="key">A</span> Move left</div>
+                <div class="key-row"><span class="key">D</span> Move right</div>
+                <div class="key-row"><span class="key">Mouse</span> Look around</div>
+            </div>
+            <div class="controls-section">
+                <h3>Ball Control</h3>
+                <div class="key-row"><span class="key">LMB</span> Kick ball (hold to charge)</div>
+                <div class="key-row"><span class="key">E</span> Change shot type</div>
+                <div class="key-row"><span class="key">F</span> Heel Flick Dash</div>
+                <div class="key-row"><span class="key">Space</span> Pause/Resume game</div>
+            </div>
+            <div class="controls-section">
+                <h3>Special</h3>
+                <div class="key-row"><span class="key">M</span> Show/hide controls</div>
+                <div class="key-row"><span class="key">ESC</span> Exit game</div>
+            </div>
+            <div class="controls-section">
+                <h3>Shot Types</h3>
+                <div class="key-row">Power Shot: Maximum velocity</div>
+                <div class="key-row">Finesse Shot: Accurate placement</div>
+                <div class="key-row">Curved Shot: Bends around defenders</div>
+                <div class="key-row">Lob Shot: High arc over obstacles</div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.11.4/dist/gsap.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
