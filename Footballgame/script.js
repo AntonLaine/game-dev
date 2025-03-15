@@ -3174,3 +3174,1295 @@ function hideGameUI(removeElements = false) {
 
 // Update controls overlay to include heel flick
 // ...existing code...
+
+// Add super shot ability with ground breaking effect and guaranteed goal
+let superShotCooldown = false;
+const superShotCooldownTime = 60000; // 1 minute cooldown
+let superShotActive = false;
+
+// Create a UI indicator for the super shot ability
+const superShotUI = document.createElement('div');
+superShotUI.style.cssText = `
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-family: Arial;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+`;
+
+const superShotIcon = document.createElement('div');
+superShotIcon.style.cssText = `
+    width: 20px;
+    height: 20px;
+    background: #ff3366;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #ff3366;
+    transition: all 0.3s ease;
+`;
+
+const superShotText = document.createElement('div');
+superShotText.textContent = "Super Shot: Ready (G)";
+
+superShotUI.appendChild(superShotIcon);
+superShotUI.appendChild(superShotText);
+document.body.appendChild(superShotUI);
+
+// Add G key handler for super shot
+document.addEventListener('keydown', (event) => {
+    // ...existing code for other keys...
+    
+    // G key to activate super shot
+    if (event.code === 'KeyG' && isPointerLocked && !superShotCooldown && !superShotActive && !isCharging) {
+        performSuperShot();
+    }
+});
+
+// Super shot ability function
+function performSuperShot() {
+    // Check if ball is in control range
+    if (!checkBallInControlRange()) {
+        showSuperShotMessage('Ball not in control range!', '#ff3366');
+        return;
+    }
+    
+    // Set cooldown and active state
+    superShotActive = true;
+    superShotCooldown = true;
+    updateSuperShotUI();
+    
+    // Store original camera position and rotation
+    const originalCameraPosition = camera.position.clone();
+    const originalCameraRotation = camera.rotation.clone();
+    const originalPlayerPosition = human.position.clone();
+    
+    // Move camera to view the player (third-person view)
+    const cameraTargetPosition = human.position.clone().add(new THREE.Vector3(5, 3, 5));
+    
+    // Show activation message
+    showSuperShotMessage('SUPER SHOT CHARGING!', '#ff3366');
+    
+    // Animate camera movement
+    gsap.to(camera.position, {
+        x: cameraTargetPosition.x,
+        y: cameraTargetPosition.y,
+        z: cameraTargetPosition.z,
+        duration: 1.2,
+        ease: "power2.inOut",
+        onUpdate: function() {
+            // Make camera look at the player
+            camera.lookAt(human.position);
+        }
+    });
+    
+    // Create ground breaking effect
+    setTimeout(() => {
+        // First wave of ground breaking
+        createGroundBreakingEffect(human.position, 6);
+        
+        setTimeout(() => {
+            // Second wave of ground breaking (larger radius)
+            createGroundBreakingEffect(human.position, 10);
+            showSuperShotMessage('UNLEASHING POWER!', '#ff3366');
+            
+            // Add player lift-off effect
+            gsap.to(human.position, {
+                y: human.position.y + 0.5,
+                duration: 0.8,
+                ease: "power2.out"
+            });
+            
+            // Create energy gathering effect
+            createEnergyGatheringEffect(human.position);
+            
+            setTimeout(() => {
+                // Third and final wave of ground breaking
+                createGroundBreakingEffect(human.position, 15);
+                
+                // Flash screen effect
+                flashScreen();
+                
+                // Return camera to original position
+                gsap.to(camera.position, {
+                    x: originalCameraPosition.x,
+                    y: originalCameraPosition.y,
+                    z: originalCameraPosition.z,
+                    duration: 1,
+                    ease: "power2.inOut",
+                    onUpdate: function() {
+                        // Gradually restore original camera rotation
+                        camera.rotation.set(
+                            camera.rotation.x + (originalCameraRotation.x - camera.rotation.x) * 0.1,
+                            camera.rotation.y + (originalCameraRotation.y - camera.rotation.y) * 0.1,
+                            camera.rotation.z + (originalCameraRotation.z - camera.rotation.z) * 0.1
+                        );
+                    },
+                    onComplete: function() {
+                        // Restore exact original rotation
+                        camera.rotation.copy(originalCameraRotation);
+                        
+                        // Return player to original height
+                        gsap.to(human.position, {
+                            y: originalPlayerPosition.y,
+                            duration: 0.5,
+                            ease: "bounce.out"
+                        });
+                        
+                        // Execute the guaranteed goal kick
+                        executeGuaranteedGoalKick();
+                        
+                        // End super shot sequence
+                        superShotActive = false;
+                    }
+                });
+            }, 1200);
+        }, 800);
+    }, 1000);
+    
+    // Reset cooldown after the full duration
+    setTimeout(() => {
+        superShotCooldown = false;
+        updateSuperShotUI();
+        
+        // Play a sound when ability is ready again
+        playAbilityReadySound();
+    }, superShotCooldownTime);
+}
+
+// Create ground breaking effect with floating pieces
+function createGroundBreakingEffect(center, radius) {
+    // Get player position
+    const position = center.clone();
+    
+    // Create ground pieces with physics
+    const pieceCount = 40 + Math.floor(radius * 3);
+    const pieces = [];
+    
+    // Add shockwave effect
+    const shockwaveGeometry = new THREE.RingGeometry(0.5, radius, 32);
+    const shockwaveMaterial = new THREE.MeshBasicMaterial({
+        color: 0xff3366,
+        transparent: true,
+        opacity: 0.7,
+        side: THREE.DoubleSide
+    });
+    
+    const shockwave = new THREE.Mesh(shockwaveGeometry, shockwaveMaterial);
+    shockwave.position.copy(position);
+    shockwave.position.y = -1.58;
+    shockwave.rotation.x = -Math.PI / 2;
+    scene.add(shockwave);
+    
+    // Animate shockwave
+    gsap.to(shockwave.scale, {
+        x: 2,
+        y: 2,
+        z: 1,
+        duration: 0.8,
+        ease: "power2.out"
+    });
+    
+    gsap.to(shockwaveMaterial, {
+        opacity: 0,
+        duration: 0.8,
+        ease: "power2.out",
+        onComplete: () => {
+            scene.remove(shockwave);
+        }
+    });
+    
+    // Create floating ground pieces
+    for (let i = 0; i < pieceCount; i++) {
+        // Create random position within radius
+        const angle = Math.random() * Math.PI * 2;
+        const distance = Math.random() * radius;
+        const x = position.x + Math.cos(angle) * distance;
+        const z = position.z + Math.sin(angle) * distance;
+        
+        // Create ground piece
+        const size = 0.5 + Math.random() * 1.0;
+        const height = 0.1 + Math.random() * 0.2;
+        
+        const geometry = new THREE.BoxGeometry(size, height, size);
+        
+        // Randomize between grass colors
+        const color = Math.random() > 0.7 ? 0x66BB6A : 0x4CAF50;
+        const material = new THREE.MeshPhongMaterial({
+            color: color,
+            flatShading: true
+        });
+        
+        const piece = new THREE.Mesh(geometry, material);
+        
+        // Position at ground level initially
+        piece.position.set(x, -1.6, z);
+        piece.rotation.set(
+            Math.random() * 0.5,
+            Math.random() * Math.PI * 2,
+            Math.random() * 0.5
+        );
+        
+        // Add to scene
+        scene.add(piece);
+        pieces.push(piece);
+        
+        // Calculate velocity based on distance from center
+        const force = 2 + Math.random() * 3;
+        const directionVector = new THREE.Vector3(x - position.x, 0, z - position.z).normalize();
+        
+        // Create piece animation
+        gsap.to(piece.position, {
+            x: piece.position.x + directionVector.x * force,
+            y: piece.position.y + 1 + Math.random() * 2,
+            z: piece.position.z + directionVector.z * force,
+            duration: 1 + Math.random(),
+            ease: "power2.out",
+            onComplete: () => {
+                // Fall back down with physics
+                gsap.to(piece.position, {
+                    y: -1.6,
+                    duration: 1 + Math.random() * 0.5,
+                    ease: "bounce.out",
+                    delay: Math.random() * 0.5,
+                    onComplete: () => {
+                        // Remove piece after it lands
+                        setTimeout(() => {
+                            scene.remove(piece);
+                        }, 1000 + Math.random() * 2000);
+                    }
+                });
+            }
+        });
+        
+        // Add rotation animation
+        gsap.to(piece.rotation, {
+            x: Math.random() * Math.PI * 2,
+            y: Math.random() * Math.PI * 4,
+            z: Math.random() * Math.PI * 2,
+            duration: 1 + Math.random(),
+            ease: "power1.inOut"
+        });
+    }
+    
+    // Create dust particles
+    for (let i = 0; i < pieceCount * 2; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const distance = Math.random() * radius * 1.2;
+        const x = position.x + Math.cos(angle) * distance;
+        const z = position.z + Math.sin(angle) * distance;
+        
+        const dustGeometry = new THREE.SphereGeometry(0.05 + Math.random() * 0.1, 8, 8);
+        const dustMaterial = new THREE.MeshBasicMaterial({
+            color: 0xaaaaaa,
+            transparent: true,
+            opacity: 0.6 + Math.random() * 0.4
+        });
+        
+        const dust = new THREE.Mesh(dustGeometry, dustMaterial);
+        dust.position.set(x, -1.6 + Math.random() * 0.5, z);
+        scene.add(dust);
+        
+        // Animate dust particles
+        gsap.to(dust.position, {
+            y: dust.position.y + 1 + Math.random() * 3,
+            duration: 1 + Math.random() * 2,
+            ease: "power1.out"
+        });
+        
+        gsap.to(dustMaterial, {
+            opacity: 0,
+            duration: 1 + Math.random() * 2,
+            delay: 0.5 + Math.random(),
+            onComplete: () => {
+                scene.remove(dust);
+            }
+        });
+    }
+    
+    // Add sound effect
+    playGroundBreakSound();
+}
+
+// Create energy gathering effect around the ball
+function createEnergyGatheringEffect(center) {
+    const energyParticleCount = 50;
+    
+    // Create a glow around the ball
+    const glowGeometry = new THREE.SphereGeometry(0.8, 32, 32);
+    const glowMaterial = new THREE.MeshBasicMaterial({
+        color: 0xff3366,
+        transparent: true,
+        opacity: 0.3,
+        side: THREE.DoubleSide
+    });
+    const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+    glow.position.copy(ball.position);
+    scene.add(glow);
+    
+    // Animate glow
+    gsap.to(glow.scale, {
+        x: 3,
+        y: 3,
+        z: 3,
+        duration: 2,
+        ease: "power1.inOut",
+        yoyo: true,
+        repeat: 1
+    });
+    
+    gsap.to(glowMaterial, {
+        opacity: 0.7,
+        duration: 2,
+        ease: "power1.inOut",
+        yoyo: true,
+        repeat: 1,
+        onComplete: () => {
+            scene.remove(glow);
+        }
+    });
+    
+    // Create energy particles that flow toward the ball
+    for (let i = 0; i < energyParticleCount; i++) {
+        setTimeout(() => {
+            // Create particle at random position in sphere around the center
+            const angle1 = Math.random() * Math.PI * 2;
+            const angle2 = Math.random() * Math.PI * 2;
+            const radius = 6 + Math.random() * 6;
+            
+            const x = center.x + Math.sin(angle1) * Math.cos(angle2) * radius;
+            const y = center.y + Math.sin(angle1) * Math.sin(angle2) * radius;
+            const z = center.z + Math.cos(angle1) * radius;
+            
+            const particleGeometry = new THREE.SphereGeometry(0.1 + Math.random() * 0.1, 8, 8);
+            const particleMaterial = new THREE.MeshBasicMaterial({
+                color: new THREE.Color(
+                    0.8 + Math.random() * 0.2,
+                    0.2,
+                    0.4 + Math.random() * 0.2
+                ),
+                transparent: true,
+                opacity: 0.7
+            });
+            
+            const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+            particle.position.set(x, y, z);
+            scene.add(particle);
+            
+            // Animate particle toward the ball
+            gsap.to(particle.position, {
+                x: ball.position.x,
+                y: ball.position.y,
+                z: ball.position.z,
+                duration: 0.5 + Math.random() * 1,
+                ease: "power3.in",
+                onComplete: () => {
+                    scene.remove(particle);
+                }
+            });
+            
+            // Fade out as it gets closer to the ball
+            gsap.to(particleMaterial, {
+                opacity: 0,
+                duration: 0.5,
+                delay: (0.5 + Math.random() * 1) - 0.5, // Time before it reaches ball
+                ease: "power2.in"
+            });
+            
+        }, i * 30); // Stagger the particles
+    }
+}
+
+// Execute the guaranteed goal kick
+function executeGuaranteedGoalKick() {
+    // Determine which goal to target (pick the one the player is facing toward)
+    const forward = new THREE.Vector3(0, 0, 1);
+    forward.applyQuaternion(human.quaternion);
+    
+    // Get the target goal
+    const goals = [
+        { x: 0, z: -30, dir: 1 },  // South goal
+        { x: 0, z: 30, dir: -1 }   // North goal
+    ];
+    
+    // Determine which goal is more in the direction the player is facing
+    let targetGoal = goals[0]; // Default to south goal
+    const dotProductSouth = forward.dot(new THREE.Vector3(0, 0, -1)); // Dot with south direction
+    const dotProductNorth = forward.dot(new THREE.Vector3(0, 0, 1)); // Dot with north direction
+    
+    if (dotProductNorth > dotProductSouth) {
+        targetGoal = goals[1]; // Choose north goal if player is facing more that way
+    }
+    
+    // Create target position (center of goal, slightly elevated)
+    const targetPos = new THREE.Vector3(
+        targetGoal.x, // Center of goal width
+        0, // Slightly above ground
+        targetGoal.z // Goal position
+    );
+    
+    // Create super shot animation
+    showSuperShotMessage('SUPER SHOT!', '#ff3366');
+    
+    // Create charging animation for player
+    const rightLeg = human.getObjectByName("rightLeg");
+    const leftLeg = human.getObjectByName("leftLeg");
+    const rightKnee = rightLeg.getObjectByName("knee");
+    const leftKnee = leftLeg.getObjectByName("knee");
+    
+    // Cancel any existing animation
+    if (currentAnimation) {
+        currentAnimation.kill();
+    }
+    
+    // Create super shot animation with extra effects
+    const timeline = gsap.timeline({
+        onComplete: function() {
+            // Return to idle when shot completes
+            if (isRunning) {
+                createRunAnimation();
+            } else {
+                createIdleAnimation();
+            }
+        }
+    });
+    
+    // More dramatic wind-up
+    timeline.to(rightLeg.rotation, { 
+        x: -1.2, // Extreme pullback
+        duration: 0.6,
+        ease: "power3.out" 
+    }, 0);
+    
+    timeline.to(rightKnee.rotation, { 
+        x: 1.5, // Extreme bend
+        duration: 0.6,
+        ease: "power3.out" 
+    }, 0);
+    
+    // Dramatic kick
+    timeline.to(rightLeg.rotation, { 
+        x: 1.5, // Extreme forward kick
+        duration: 0.3,
+        ease: "power4.in" 
+    }, 0.6);
+    
+    timeline.to(rightKnee.rotation, { 
+        x: 0, // Straighten leg
+        duration: 0.3,
+        ease: "power4.in" 
+    }, 0.6);
+    
+    // Return to neutral
+    timeline.to([rightLeg.rotation, leftLeg.rotation, rightKnee.rotation, leftKnee.rotation], {
+        x: 0,
+        y: 0,
+        duration: 0.5,
+        ease: "power1.inOut"
+    }, 0.9);
+    
+    // Ball physics override for guaranteed goal
+    ball.userData.velocity.set(0, 0, 0); // Reset velocity
+    
+    // Calculate direction to target
+    const kickDirection = new THREE.Vector3().subVectors(targetPos, ball.position).normalize();
+    
+    // Get distance to goal
+    const distanceToGoal = ball.position.distanceTo(targetPos);
+    
+    // Calculate perfect arc parameters
+    const gravity = 9.8;
+    const travelTime = 1.5; // Time to reach goal (adjust for aesthetics)
+    const initialVelocity = distanceToGoal / travelTime;
+    
+    // Calculate upward velocity for a nice arc
+    const heightOffset = 2 + (distanceToGoal * 0.1); // Higher arc for further shots
+    const upwardVelocity = (heightOffset + 0.5 * gravity * travelTime * travelTime) / travelTime;
+    
+    // Set final kick direction with perfect arc
+    kickDirection.x *= initialVelocity;
+    kickDirection.y = upwardVelocity;
+    kickDirection.z *= initialVelocity;
+    
+    // Apply super shot velocity
+    ball.userData.velocity.copy(kickDirection);
+    ball.userData.isMoving = true;
+    ball.userData.spin = 5; // Extra spin for visual effect
+    
+    // Create super shot trail effect that follows the ball
+    createSuperShotTrail(ball);
+    
+    // Save the animation
+    currentAnimation = timeline;
+}
+
+// Create a trail effect for the super shot
+function createSuperShotTrail(ball) {
+    // Create trail emitter that follows the ball
+    const trailInterval = setInterval(() => {
+        if (!ball.userData.isMoving || ball.userData.velocity.length() < 5) {
+            clearInterval(trailInterval);
+            return;
+        }
+        
+        // Trail particle
+        const trailGeometry = new THREE.SphereGeometry(0.15, 8, 8);
+        const trailMaterial = new THREE.MeshBasicMaterial({
+            color: 0xff3366,
+            transparent: true,
+            opacity: 0.7
+        });
+        
+        const trailParticle = new THREE.Mesh(trailGeometry, trailMaterial);
+        trailParticle.position.copy(ball.position);
+        scene.add(trailParticle);
+        
+        // Animate and remove
+        gsap.to(trailParticle.scale, {
+            x: 0,
+            y: 0,
+            z: 0,
+            duration: 0.5,
+            ease: "power3.out"
+        });
+        
+        gsap.to(trailMaterial, {
+            opacity: 0,
+            duration: 0.5,
+            ease: "power3.out",
+            onComplete: () => {
+                scene.remove(trailParticle);
+            }
+        });
+    }, 30); // Frequent trails
+    
+    // Create a glowing aura around the ball
+    const auraGeometry = new THREE.SphereGeometry(0.4, 32, 32);
+    const auraMaterial = new THREE.MeshBasicMaterial({
+        color: 0xff3366,
+        transparent: true,
+        opacity: 0.5,
+        side: THREE.DoubleSide
+    });
+    const aura = new THREE.Mesh(auraGeometry, auraMaterial);
+    ball.add(aura);
+    
+    // Animate aura
+    const auraAnimation = gsap.to(aura.scale, {
+        x: 1.5,
+        y: 1.5,
+        z: 1.5,
+        duration: 0.8,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut"
+    });
+    
+    // Remove aura after ball slows down
+    const auraCheckInterval = setInterval(() => {
+        if (!ball.userData.isMoving || ball.userData.velocity.length() < 5) {
+            clearInterval(auraCheckInterval);
+            auraAnimation.kill();
+            
+            gsap.to(auraMaterial, {
+                opacity: 0,
+                duration: 0.5,
+                onComplete: () => {
+                    ball.remove(aura);
+                }
+            });
+        }
+    }, 100);
+}
+
+// Flash screen effect
+function flashScreen() {
+    const flash = document.createElement('div');
+    flash.style.cssText = `
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 9999;
+    `;
+    document.body.appendChild(flash);
+    
+    // Flash animation
+    gsap.to(flash, {
+        opacity: 0.9,
+        duration: 0.1,
+        onComplete: () => {
+            gsap.to(flash, {
+                opacity: 0,
+                duration: 0.3,
+                onComplete: () => {
+                    document.body.removeChild(flash);
+                }
+            });
+        }
+    });
+}
+
+// Play ground breaking sound effect
+function playGroundBreakSound() {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Create noise burst for rumble effect
+        const duration = 0.5;
+        const bufferSize = audioContext.sampleRate * duration;
+        const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+        const data = buffer.getChannelData(0);
+        
+        // Fill buffer with noise
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+        }
+        
+        // Create filter for noise
+        const filter = audioContext.createBiquadFilter();
+        filter.type = "lowpass";
+        filter.frequency.value = 150;
+        filter.Q.value = 0.5;
+        
+        // Create source and connect
+        const source = audioContext.createBufferSource();
+        source.buffer = buffer;
+        
+        // Create gain node for volume envelope
+        const gainNode = audioContext.createGain();
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.02);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+        
+        // Connect nodes
+        source.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        // Play sound
+        source.start();
+        source.stop(audioContext.currentTime + duration);
+    } catch(e) {
+        console.warn("Audio not supported:", e);
+    }
+}
+
+// Update super shot UI
+function updateSuperShotUI() {
+    if (superShotCooldown) {
+        superShotIcon.style.background = "#555555";
+        superShotIcon.style.boxShadow = "none";
+        superShotText.textContent = "Super Shot: Cooldown (G)";
+    } else {
+        superShotIcon.style.background = "#ff3366";
+        superShotIcon.style.boxShadow = "0 0 10px #ff3366";
+        superShotText.textContent = "Super Shot: Ready (G)";
+    }
+}
+
+// Show super shot message
+function showSuperShotMessage(message, color) {
+    const superShotMessage = document.createElement('div');
+    superShotMessage.style.cssText = `
+        position: absolute;
+        top: 30%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.7);
+        color: ${color};
+        padding: 15px 30px;
+        border-radius: 5px;
+        font-family: Arial, sans-serif;
+        font-size: 32px;
+        font-weight: bold;
+        z-index: 1000;
+        text-shadow: 0 0 15px rgba(255, 51, 102, 0.7);
+        opacity: 0;
+    `;
+    superShotMessage.textContent = message;
+    document.body.appendChild(superShotMessage);
+    
+    // Animation
+    gsap.to(superShotMessage, {
+        opacity: 1,
+        duration: 0.3,
+        ease: "power2.out",
+        onComplete: () => {
+            gsap.to(superShotMessage, {
+                opacity: 0,
+                delay: 1.2,
+                duration: 0.5,
+                onComplete: () => {
+                    document.body.removeChild(superShotMessage);
+                }
+            });
+        }
+    });
+}
+
+// Update showGameUI function to show super shot UI
+const originalShowGameUI = showGameUI;
+showGameUI = function() {
+    originalShowGameUI();
+    
+    // Show super shot UI
+    superShotUI.style.display = 'flex';
+};
+
+// Update hideGameUI function to hide super shot UI
+const originalHideGameUI = hideGameUI;
+hideGameUI = function(removeElements) {
+    originalHideGameUI(removeElements);
+    
+    // Hide super shot UI
+    superShotUI.style.display = 'none';
+};
+
+// Update controls overlay to include G key for Super Shot
+document.addEventListener('DOMContentLoaded', function() {
+    const controlsSection = document.querySelector('.controls-section:nth-child(3)');
+    if (controlsSection) {
+        const superShotControl = document.createElement('div');
+        superShotControl.className = 'key-row';
+        superShotControl.innerHTML = '<span class="key">G</span> Super Shot';
+        
+        // Insert before the ESC key row
+        const escKeyRow = controlsSection.querySelector('.key-row:last-child');
+        controlsSection.insertBefore(superShotControl, escKeyRow);
+    }
+});
+
+// ...existing code...
+
+// Update existing showGameUI function to also show super shot UI
+function showGameUI() {
+    // Create play controls if they don't exist
+    if (!document.getElementById('play-controls')) {
+        createPlayButton();
+    }
+    
+    // Make sure UI elements are visible
+    const playControls = document.getElementById('play-controls');
+    if (playControls) playControls.style.display = 'flex';
+    
+    // Show heel flick UI
+    heelFlickUI.style.display = 'flex';
+    
+    // Show super shot UI
+    superShotUI.style.display = 'flex';
+}
+
+// Update hideGameUI function to also hide super shot UI
+function hideGameUI(removeElements = false) {
+    const playControls = document.getElementById('play-controls');
+    
+    if (playControls) {
+        if (removeElements) {
+            playControls.remove();
+        } else {
+            playControls.style.display = 'none';
+        }
+    }
+    
+    // Hide heel flick UI
+    heelFlickUI.style.display = 'none';
+    
+    // Hide super shot UI
+    superShotUI.style.display = 'none';
+}
+
+// Add function to create play button
+function createPlayButton() {
+    const playControls = document.createElement('div');
+    playControls.id = 'play-controls';
+    playControls.style.cssText = `
+        position: absolute;
+        bottom: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
+    
+    // Play/pause button
+    const playButton = document.createElement('button');
+    playButton.id = 'play-button';
+    playButton.style.cssText = `
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: rgba(0,0,0,0.7);
+        color: white;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid white;
+        cursor: pointer;
+        margin: 0 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    `;
+    playButton.innerHTML = '⏸️';
+    playButton.addEventListener('click', toggleAnimation);
+    
+    playControls.appendChild(playButton);
+    document.body.appendChild(playControls);
+}
+
+// Create notification function for when abilities are ready
+function showAbilityReadyNotification(abilityName) {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: absolute;
+        top: 70%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.7);
+        color: #ffcc00;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-family: Arial, sans-serif;
+        font-size: 18px;
+        font-weight: bold;
+        z-index: 1000;
+        text-shadow: 0 0 5px rgba(255, 204, 0, 0.7);
+        opacity: 0;
+        pointer-events: none;
+    `;
+    notification.textContent = `${abilityName} Ready!`;
+    document.body.appendChild(notification);
+    
+    // Animation
+    gsap.to(notification, {
+        opacity: 1,
+        y: -20,
+        duration: 0.5,
+        ease: "power2.out",
+        onComplete: () => {
+            gsap.to(notification, {
+                opacity: 0,
+                y: -40,
+                delay: 1.5,
+                duration: 0.5,
+                onComplete: () => {
+                    document.body.removeChild(notification);
+                }
+            });
+        }
+    });
+}
+
+// Update the animate function to check for super shot cooldown end
+const prevAnimate = animate;
+animate = function() {
+    prevAnimate();
+    
+    // Check if super shot cooldown just ended
+    if (superShotCooldown) {
+        const timeRemaining = superShotCooldownTime - (Date.now() - superShotCooldownStart);
+        
+        if (timeRemaining <= 0 && !superShotNotified) {
+            superShotCooldown = false;
+            updateSuperShotUI();
+            showAbilityReadyNotification('Super Shot');
+            superShotNotified = true;
+            
+            // Play ready sound effect
+            playAbilityReadySound();
+        }
+    }
+};
+
+// Add variable to track super shot cooldown start time
+let superShotCooldownStart = 0;
+let superShotNotified = false;
+
+// Update performSuperShot function to track cooldown start time
+function performSuperShot() {
+    // Check if ball is in control range
+    if (!checkBallInControlRange()) {
+        showSuperShotMessage('Ball not in control range!', '#ff3366');
+        return;
+    }
+    
+    // Set cooldown and track start time
+    superShotActive = true;
+    superShotCooldown = true;
+    superShotCooldownStart = Date.now();
+    superShotNotified = false;
+    updateSuperShotUI();
+    
+    // Rest of the existing function...
+    // ...existing code...
+}
+
+// Add cooldown timer display to Super Shot UI
+function updateSuperShotUI() {
+    if (superShotCooldown) {
+        // Calculate remaining time
+        const remainingTime = Math.max(0, Math.ceil((superShotCooldownTime - (Date.now() - superShotCooldownStart)) / 1000));
+        
+        superShotIcon.style.background = "#555555";
+        superShotIcon.style.boxShadow = "none";
+        superShotText.textContent = `Super Shot: ${remainingTime}s (G)`;
+        
+        // Update every second if the cooldown is active
+        if (remainingTime > 0) {
+            setTimeout(() => updateSuperShotUI(), 1000);
+        }
+    } else {
+        superShotIcon.style.background = "#ff3366";
+        superShotIcon.style.boxShadow = "0 0 10px #ff3366";
+        superShotText.textContent = "Super Shot: Ready (G)";
+    }
+}
+
+// Enhanced ground breaking effect for more dramatic impact
+function createGroundShatteringEffect(center, radius, intensity = 1) {
+    // Create a radial shockwave
+    const shockwaveGeometry = new THREE.RingGeometry(0.1, radius, 32);
+    const shockwaveMaterial = new THREE.MeshBasicMaterial({
+        color: 0xff3366,
+        transparent: true,
+        opacity: 0.7,
+        side: THREE.DoubleSide
+    });
+    
+    const shockwave = new THREE.Mesh(shockwaveGeometry, shockwaveMaterial);
+    shockwave.position.copy(center);
+    shockwave.position.y = -1.58;
+    shockwave.rotation.x = -Math.PI / 2;
+    scene.add(shockwave);
+    
+    // Animate shockwave expansion
+    gsap.to(shockwave.scale, {
+        x: 2.5,
+        y: 2.5,
+        z: 1,
+        duration: 0.6 * intensity,
+        ease: "power2.out"
+    });
+    
+    gsap.to(shockwaveMaterial, {
+        opacity: 0,
+        duration: 0.8 * intensity,
+        ease: "power2.out",
+        onComplete: () => {
+            scene.remove(shockwave);
+        }
+    });
+    
+    // Create a secondary glow effect
+    const glowGeometry = new THREE.CircleGeometry(radius * 0.8, 32);
+    const glowMaterial = new THREE.MeshBasicMaterial({
+        color: 0xff3366,
+        transparent: true,
+        opacity: 0.3,
+        side: THREE.DoubleSide
+    });
+    
+    const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+    glow.position.copy(center);
+    glow.position.y = -1.57;
+    glow.rotation.x = -Math.PI / 2;
+    scene.add(glow);
+    
+    // Animate glow
+    gsap.to(glow.scale, {
+        x: 3,
+        y: 3,
+        z: 1,
+        duration: 1 * intensity,
+        ease: "power2.out"
+    });
+    
+    gsap.to(glowMaterial, {
+        opacity: 0,
+        duration: 1.2 * intensity,
+        ease: "power2.out",
+        onComplete: () => {
+            scene.remove(glow);
+        }
+    });
+    
+    // Add camera shake effect
+    const shakeDuration = 0.5 * intensity;
+    const shakeIntensity = 0.05 * intensity;
+    
+    // Store original camera position
+    const originalCameraPos = camera.position.clone();
+    
+    // Camera shake animation
+    const shakeTimeline = gsap.timeline();
+    for (let i = 0; i < 10; i++) {
+        shakeTimeline.to(camera.position, {
+            x: originalCameraPos.x + (Math.random() - 0.5) * shakeIntensity,
+            y: originalCameraPos.y + (Math.random() - 0.5) * shakeIntensity,
+            z: originalCameraPos.z + (Math.random() - 0.5) * shakeIntensity,
+            duration: shakeDuration / 10,
+            ease: "none"
+        });
+    }
+    
+    // Return to original position
+    shakeTimeline.to(camera.position, {
+        x: originalCameraPos.x,
+        y: originalCameraPos.y,
+        z: originalCameraPos.z,
+        duration: shakeDuration / 5,
+        ease: "power1.out"
+    });
+}
+
+// Modify handleMouseDown to prevent kicking during super shot
+const origHandleMouseDown = handleMouseDown;
+handleMouseDown = function(event) {
+    if (superShotActive) return; // Prevent kick charging during super shot
+    origHandleMouseDown(event);
+};
+
+// Modify updatePlayerMovement to prevent movement during super shot camera sequence
+const origUpdatePlayerMovement = updatePlayerMovement;
+updatePlayerMovement = function(delta) {
+    if (superShotActive) return; // Prevent movement during super shot
+    origUpdatePlayerMovement(delta);
+};
+
+// Override checkGoal to guarantee goal from super shot
+const origCheckGoal = checkGoal;
+checkGoal = function() {
+    // If this is a super shot, guarantee a goal and skip normal checking
+    if (ball.userData.superShot) {
+        // Check if we've reached either goal line
+        const goals = [
+            { x: 0, z: -30, dir: 1, name: "South" },  // South goal
+            { x: 0, z: 30, dir: -1, name: "North" }   // North goal
+        ];
+        
+        // Determine which goal we're approaching
+        let targetGoal;
+        if (ball.userData.targetGoal) {
+            targetGoal = ball.userData.targetGoal;
+        } else {
+            // Find the goal we're moving towards
+            const vel = ball.userData.velocity;
+            if (vel.z > 0) {
+                targetGoal = goals[1]; // North goal
+            } else {
+                targetGoal = goals[0]; // South goal
+            }
+            ball.userData.targetGoal = targetGoal;
+        }
+        
+        // Check if we've reached the goal line
+        const reachedGoalLine = (targetGoal.z > 0 && ball.position.z > targetGoal.z - 1) || 
+                             (targetGoal.z < 0 && ball.position.z < targetGoal.z + 1);
+        
+        if (reachedGoalLine && !ball.userData.goalScored) {
+            // Force the ball into the net for visual effect
+            if (targetGoal.z > 0) {
+                ball.position.z = targetGoal.z - 0.5;
+            } else {
+                ball.position.z = targetGoal.z + 0.5;
+            }
+            
+            // Randomly position within goal width for variety
+            ball.position.x = Math.random() * (goalWidth - 1) - (goalWidth/2 - 0.5);
+            ball.position.y = Math.random() * 1.5 + 0.5;
+            
+            // Slow down the ball dramatically for goal effect
+            ball.userData.velocity.multiplyScalar(0.2);
+            
+            // Mark as scored and increase score
+            ball.userData.goalScored = true;
+            score += 10;
+            scoreDisplay.textContent = `SCORE: ${score}`;
+            
+            // Create Super Goal animation
+            const goalAlert = document.createElement('div');
+            goalAlert.style.cssText = `
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0);
+                font-size: 70px;
+                font-weight: bold;
+                color: #ff3366;
+                text-shadow: 0 0 30px rgba(255, 51, 102, 0.9);
+                font-family: 'Arial', sans-serif;
+                z-index: 1000;
+                pointer-events: none;
+            `;
+            goalAlert.textContent = `SUPER GOAL! (${targetGoal.name})`;
+            document.body.appendChild(goalAlert);
+            
+            // Animate goal text with more dramatic effect
+            gsap.to(goalAlert, {
+                scale: 1.2,
+                duration: 0.6,
+                ease: "back.out(1.5)",
+                onComplete: () => {
+                    gsap.to(goalAlert, {
+                        scale: 1.8,
+                        opacity: 0,
+                        y: -70,
+                        duration: 1.5,
+                        delay: 1.2,
+                        onComplete: () => document.body.removeChild(goalAlert)
+                    });
+                }
+            });
+            
+            // Create explosion effect in the goal
+            createGoalExplosionEffect(ball.position.clone());
+            
+            // Respawn ball in the center of the field after delay
+            setTimeout(() => {
+                // Remove super shot flag
+                ball.userData.superShot = false;
+                ball.userData.targetGoal = null;
+                
+                // Reset ball
+                ball.userData.velocity.set(0, 0, 0);
+                ball.userData.spin = 0;
+                
+                // Reset position to center field
+                gsap.to(ball.position, {
+                    x: 0,
+                    y: 1,
+                    z: 0,
+                    duration: 0.8,
+                    ease: "power2.inOut",
+                    onComplete: () => {
+                        // Give it a small bounce
+                        ball.userData.velocity.y = 5;
+                        ball.userData.isMoving = true;
+                        
+                        // Reset goal scored flag
+                        ball.userData.goalScored = false;
+                    }
+                });
+            }, 3000); // Longer delay for super goal celebration
+            
+            return; // Skip regular goal checking
+        }
+    }
+    
+    // For normal shots, use original goal checking
+    origCheckGoal();
+};
+
+// Create explosion effect for super goal
+function createGoalExplosionEffect(position) {
+    // Create multiple expanding rings
+    for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+            const ringGeometry = new THREE.RingGeometry(0.1, 1.5, 32);
+            const ringMaterial = new THREE.MeshBasicMaterial({
+                color: new THREE.Color(
+                    0.8 + Math.random() * 0.2,
+                    0.2 + Math.random() * 0.2,
+                    0.4 + Math.random() * 0.2
+                ),
+                transparent: true,
+                opacity: 0.7,
+                side: THREE.DoubleSide
+            });
+            
+            const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+            ring.position.copy(position);
+            ring.rotation.set(
+                Math.random() * Math.PI,
+                Math.random() * Math.PI,
+                Math.random() * Math.PI
+            );
+            scene.add(ring);
+            
+            // Animate ring expansion
+            gsap.to(ring.scale, {
+                x: 10,
+                y: 10,
+                z: 1,
+                duration: 1.5,
+                ease: "power1.out"
+            });
+            
+            gsap.to(ringMaterial, {
+                opacity: 0,
+                duration: 1.5,
+                ease: "power1.out",
+                onComplete: () => {
+                    scene.remove(ring);
+                }
+            });
+        }, i * 200);
+    }
+    
+    // Create particles explosion
+    for (let i = 0; i < 100; i++) {
+        const particleGeometry = new THREE.SphereGeometry(0.1 + Math.random() * 0.2, 8, 8);
+        const particleMaterial = new THREE.MeshBasicMaterial({
+            color: new THREE.Color(
+                0.8 + Math.random() * 0.2,
+                0.2 + Math.random() * 0.3,
+                0.4 + Math.random() * 0.2
+            ),
+            transparent: true,
+            opacity: 0.8
+        });
+        
+        const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+        particle.position.copy(position);
+        scene.add(particle);
+        
+        // Random explosion direction
+        const angle1 = Math.random() * Math.PI * 2;
+        const angle2 = Math.random() * Math.PI * 2;
+        const speed = 2 + Math.random() * 8;
+        
+        const direction = new THREE.Vector3(
+            Math.sin(angle1) * Math.cos(angle2),
+            Math.sin(angle1) * Math.sin(angle2),
+            Math.cos(angle1)
+        );
+        
+        // Animate particle
+        gsap.to(particle.position, {
+            x: particle.position.x + direction.x * speed,
+            y: particle.position.y + direction.y * speed,
+            z: particle.position.z + direction.z * speed,
+            duration: 1 + Math.random(),
+            ease: "power2.out"
+        });
+        
+        gsap.to(particleMaterial, {
+            opacity: 0,
+            duration: 1 + Math.random(),
+            delay: Math.random() * 0.5,
+            onComplete: () => {
+                scene.remove(particle);
+            }
+        });
+    }
+}
+
+// Update executeGuaranteedGoalKick to flag the ball as a super shot
+function executeGuaranteedGoalKick() {
+    // ...existing code...
+    
+    // Flag the ball as a super shot for the checkGoal function
+    ball.userData.superShot = true;
+    ball.userData.targetGoal = null; // Will be determined by velocity direction
+    
+    // ...rest of existing code...
+}
