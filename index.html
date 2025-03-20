@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Human King with Crown</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="info">
+        Controls: W=Forward, S=Backward, A=Turn Left, D=Turn Right<br>
+        <small>Open this file directly in your browser</small>
+    </div>
+    
+    <!-- Stats Panel - enhanced with kill count -->
+    <div id="stats-panel" class="ui-panel">
+        <h3 style="text-align: center; margin-top: 0;">Kingdom Stats</h3>
+        <div class="stat-item">
+            <span>Money:</span>
+            <span id="money-value" class="stat-value">100</span>
+        </div>
+        <div class="stat-item">
+            <span>Research Points:</span>
+            <span id="research-points" class="stat-value">0</span>
+        </div>
+        <div class="stat-item">
+            <span>Enemies Defeated:</span>
+            <span id="kill-count" class="stat-value">0</span>
+        </div>
+    </div>
+    
+    <!-- Create Panel -->
+    <div id="create-panel" class="ui-panel">
+        <button class="create-button" onclick="game.createBuilding('farm')">
+            Farm ($50)<br>
+            <small>Generates money</small>
+        </button>
+        <button class="create-button" onclick="game.createBuilding('wall')">
+            Wall ($30)<br>
+            <small>Defensive barrier</small>
+        </button>
+        <button class="create-button" onclick="game.createBuilding('barracks')">
+            Barracks ($100)<br>
+            <small>Train soldiers</small>
+        </button>
+        <button class="create-button" onclick="game.createBuilding('market')">
+            Market ($120)<br>
+            <small>More income</small>
+        </button>
+        <button class="create-button" onclick="game.createBuilding('tower')">
+            Tower ($80)<br>
+            <small>Defense</small>
+        </button>
+        <button class="create-button" onclick="game.createBuilding('researchLab')">
+            Research Lab ($150)<br>
+            <small>Research tech</small>
+        </button>
+    </div>
+    
+    <!-- Soldier Creation Panel (initially hidden) - Enhanced categories -->
+    <div id="soldier-panel" class="ui-panel" style="display: none;">
+        <h3 style="text-align: center; margin-top: 0;">Create Soldiers</h3>
+        
+        <div class="unit-category">
+            <h4>Basic Units</h4>
+            <button class="create-button" onclick="game.createSoldier('swordsman')">
+                Swordsman ($25)<br>
+                <small>Basic melee unit</small>
+            </button>
+            <button class="create-button" onclick="game.createSoldier('archer')">
+                Archer ($40)<br>
+                <small>Ranged attacker</small>
+            </button>
+            <button class="create-button" onclick="game.createSoldier('knight')">
+                Knight ($75)<br>
+                <small>Heavy cavalry</small>
+            </button>
+        </div>
+        
+        <div id="advanced-units" class="unit-category" style="display: none;">
+            <h4>Advanced Units</h4>
+            <button class="create-button premium" onclick="game.createSoldier('heavyKnight')">
+                Heavy Knight ($120)<br>
+                <small>Elite unit</small>
+            </button>
+            <!-- Other advanced units will be added dynamically by research -->
+        </div>
+        
+        <div class="panel-footer">
+            <button class="close-button" onclick="game.closeSoldierPanel()">Close</button>
+        </div>
+    </div>
+    
+    <!-- Research Panel (initially hidden) -->
+    <div id="research-panel" class="ui-panel" style="display: none;">
+        <h3 style="text-align: center; margin-top: 0;">Research Technologies</h3>
+        <div class="resource-info">Research Points: <span id="research-points-display">0</span></div>
+        <div id="technology-list" class="tech-list">
+            <!-- Technologies will be added dynamically -->
+        </div>
+        <div class="panel-footer">
+            <button class="close-button" onclick="game.closeResearchPanel()">Close</button>
+        </div>
+    </div>
+    
+    <!-- Research Status Panel (initially hidden) -->
+    <div id="research-status" class="status-panel" style="display: none;">
+        <div>Researching:</div>
+        <div id="current-research-name">Technology</div>
+        <div class="progress-container">
+            <div id="research-progress" class="progress-bar"></div>
+            <div id="research-progress-text" class="progress-text">0%</div>
+        </div>
+    </div>
+    
+    <!-- Unit Control Panel (initially hidden) -->
+    <div id="unit-control-panel" class="ui-panel" style="display: none;">
+        <h3 style="text-align: center; margin-top: 0;">Unit Control</h3>
+        <div class="unit-info">
+            <div>Selected: <span id="selected-unit-count">0</span> units</div>
+            <div id="unit-type-breakdown"></div>
+            <div class="health-display">Health: <span id="unit-health">100</span></div>
+        </div>
+        <div class="unit-controls">
+            <button class="control-button" onclick="moveSelectedUnits()">
+                Move (M)
+            </button>
+            <button class="control-button" onclick="game.clearUnitSelection()">
+                Deselect (Esc)
+            </button>
+        </div>
+        <div class="keyboard-hints">
+            <small>Keyboard: M = Move, Esc = Deselect</small>
+        </div>
+    </div>
+    
+    <!-- Debug Panel (initially hidden) -->
+    <div id="debug-panel" class="ui-panel" style="display: none;">
+        <h3 style="text-align: center; margin-top: 0;">Debug Menu</h3>
+        <div class="debug-controls">
+            <div class="debug-item">
+                <label for="add-money">Add Money:</label>
+                <input type="number" id="add-money" value="1000" min="0" step="100">
+                <button onclick="game.addMoney(document.getElementById('add-money').value)">Add</button>
+            </div>
+            <div class="debug-item">
+                <label for="add-research">Add Research Points:</label>
+                <input type="number" id="add-research" value="100" min="0" step="50">
+                <button onclick="game.addResearchPoints(document.getElementById('add-research').value)">Add</button>
+            </div>
+            <div class="debug-item checkbox-item">
+                <label for="instant-research">Instant Research:</label>
+                <input type="checkbox" id="instant-research" onchange="game.toggleInstantResearch(this.checked)">
+            </div>
+        </div>
+        <div class="panel-footer">
+            <button class="close-button" onclick="game.closeDebugPanel()">Close</button>
+        </div>
+    </div>
+    
+    <!-- Load Three.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Load our scripts in order -->
+    <script src="human.js"></script>
+    <script src="controls.js"></script>
+    <script src="game.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
