@@ -1,0 +1,222 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #111;
+    color: #fff;
+    font-family: 'Courier New', Courier, monospace;
+    overflow: hidden;
+}
+
+.game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 10;
+}
+
+.hidden {
+    display: none;
+}
+
+#start-screen, #game-over-screen, #upgrade-screen, #wave-transition {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+#start-screen h1, #game-over-screen h1 {
+    font-size: 4rem;
+    color: #ff3333;
+    text-shadow: 0 0 10px #ff0000;
+    margin-bottom: 2rem;
+}
+
+#upgrade-screen h2, #wave-transition h2 {
+    font-size: 2.5rem;
+    color: #ff9933;
+    text-shadow: 0 0 10px #ff6600;
+    margin-bottom: 2rem;
+}
+
+#wave-transition p {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+#wave-bonus-reward {
+    font-size: 1.3rem;
+    color: #f1c40f;
+    margin-top: 1rem;
+}
+
+button {
+    background-color: #ff3333;
+    color: #fff;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.5rem;
+    margin: 1rem 0;
+    cursor: pointer;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    box-shadow: 0 0 10px #ff0000;
+    transition: all 0.2s;
+}
+
+button:hover {
+    background-color: #ff5555;
+    transform: scale(1.05);
+}
+
+#game-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#game-ui {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#health-bar {
+    width: 200px;
+    height: 20px;
+    background-color: #333;
+    border: 2px solid #fff;
+}
+
+#health-fill {
+    width: 100%;
+    height: 100%;
+    background-color: #ff3333;
+    transition: width 0.3s;
+}
+
+#ammo-counter, #score, #wave {
+    font-size: 1.2rem;
+    color: #fff;
+    text-shadow: 1px 1px 2px #000;
+}
+
+/* Upgrade Cards Styling */
+#upgrade-cards {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    max-width: 1000px;
+}
+
+.upgrade-card {
+    width: 220px;
+    height: 300px;
+    background-color: #2c3e50;
+    border-radius: 10px;
+    padding: 15px;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.upgrade-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.upgrade-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+}
+
+.upgrade-card.rarity-common::before {
+    background-color: #95a5a6;
+}
+
+.upgrade-card.rarity-uncommon::before {
+    background-color: #2ecc71;
+}
+
+.upgrade-card.rarity-rare::before {
+    background-color: #3498db;
+}
+
+.upgrade-card.rarity-epic::before {
+    background-color: #9b59b6;
+}
+
+.upgrade-card.rarity-legendary::before {
+    background-color: #f1c40f;
+}
+
+.upgrade-card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.upgrade-card-icon {
+    width: 100px;
+    height: 100px;
+    background-color: #34495e;
+    border-radius: 50%;
+    margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+}
+
+.upgrade-card-description {
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 10px;
+    flex-grow: 1;
+}
+
+.upgrade-card-rarity {
+    font-size: 0.8rem;
+    margin-top: 5px;
+    text-transform: uppercase;
+}
+
+/* Wave transition animation */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+#wave-transition h2 {
+    animation: pulse 2s infinite;
+}

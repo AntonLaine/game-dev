@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zombie Shooter</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div id="start-screen" class="screen">
+            <h1>ZOMBIE APOCALYPSE</h1>
+            <button id="start-button">START GAME</button>
+            <p>Use WASD to move, mouse to aim and shoot</p>
+        </div>
+        <div id="game-screen" class="screen hidden">
+            <canvas id="game-canvas"></canvas>
+            <div id="game-ui">
+                <div id="health-bar">
+                    <div id="health-fill"></div>
+                </div>
+                <div id="ammo-counter">30/30</div>
+                <div id="score">Score: 0</div>
+                <div id="wave">Wave: 1</div>
+            </div>
+        </div>
+        <div id="upgrade-screen" class="screen hidden">
+            <h2>Choose Your Upgrade</h2>
+            <div id="upgrade-cards">
+                <!-- Cards will be added dynamically -->
+            </div>
+        </div>
+        <div id="wave-transition" class="screen hidden">
+            <h2>Wave <span id="next-wave-number">1</span> Complete!</h2>
+            <p>Prepare for the next wave...</p>
+            <div id="wave-bonus-reward"></div>
+        </div>
+        <div id="game-over-screen" class="screen hidden">
+            <h1>GAME OVER</h1>
+            <p id="final-score">Your score: 0</p>
+            <button id="restart-button">PLAY AGAIN</button>
+        </div>
+    </div>
+    
+    <script src="js/utils.js"></script>
+    <script src="js/assets.js"></script>
+    <script src="js/weapon.js"></script>
+    <script src="js/particle.js"></script>
+    <script src="js/powerup.js"></script>
+    <script src="js/zombie.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/upgrades.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
