@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Rolling System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Item Rolling System</h1>
+        <div id="game-header">
+            <button id="roll-button">Roll Item (Free)</button>
+            <div id="gems-counter">Gems: <span id="gems-value">100</span></div>
+            <button id="toggle-shop-btn">Shop</button>
+        </div>
+        
+        <div id="notification" class="hidden"></div>
+        
+        <div id="item-display">
+            <div id="item-result">
+                <img id="item-image" src="https://via.placeholder.com/150" alt="Item">
+                <div id="item-info">
+                    <h3 id="item-name">Roll to get an item</h3>
+                    <p id="item-rarity">-</p>
+                    <p id="item-description">Click the Roll Item button to try your luck! Selling items gives you gems for upgrades.</p>
+                    <button id="sell-button" disabled>Sell Item</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="shop-section" class="hidden">
+            <h2>Shop</h2>
+            <p class="shop-intro">Spend your gems on upgrades to improve your rolling experience</p>
+            <div id="upgrades-list"></div>
+        </div>
+        
+        <div id="inventory-section">
+            <h2>Inventory</h2>
+            <div class="inventory-controls">
+                <button id="sell-all-btn">Sell All Items</button>
+                <div class="sell-by-rarity">
+                    <button data-rarity="common" class="sell-rarity-btn common">Sell Commons</button>
+                    <button data-rarity="uncommon" class="sell-rarity-btn uncommon">Sell Uncommons</button>
+                    <button data-rarity="rare" class="sell-rarity-btn rare">Sell Rares</button>
+                </div>
+            </div>
+            <div id="inventory-list"></div>
+        </div>
+        
+        <div id="roll-history">
+            <h2>Roll History</h2>
+            <div id="history-list"></div>
+        </div>
+    </div>
+    
+    <div id="mythic-animation" class="hidden">
+        <div class="mythic-glow"></div>
+        <div class="mythic-particles"></div>
+        <div class="mythic-text">MYTHIC ITEM!</div>
+    </div>
+    
+    <div id="cosmic-animation" class="hidden">
+        <div class="cosmic-backdrop"></div>
+        <div class="cosmic-stars"></div>
+        <div class="cosmic-rays"></div>
+        <div class="cosmic-text">COSMIC ITEM DISCOVERED!</div>
+        <div class="cosmic-subtext">The rarest of treasures...</div>
+    </div>
+    
+    <div id="ancient-animation" class="hidden">
+        <div class="ancient-backdrop"></div>
+        <div class="ancient-symbols"></div>
+        <div class="ancient-text">ANCIENT ARTIFACT UNEARTHED!</div>
+        <div class="ancient-subtext">Lost to time...</div>
+    </div>
+    
+    <div id="divine-animation" class="hidden">
+        <div class="divine-backdrop"></div>
+        <div class="divine-light"></div>
+        <div class="divine-rays"></div>
+        <div class="divine-text">DIVINE BLESSING BESTOWED!</div>
+        <div class="divine-subtext">The gods favor you...</div>
+    </div>
+    
+    <div id="primordial-animation" class="hidden">
+        <div class="primordial-backdrop"></div>
+        <div class="primordial-vortex"></div>
+        <div class="primordial-particles"></div>
+        <div class="primordial-text">PRIMORDIAL POWER AWAKENED!</div>
+        <div class="primordial-subtext">From the beginning of existence...</div>
+    </div>
+    
+    <div id="cheat-menu" class="hidden">
+        <div class="cheat-header">
+            <h2>Developer Menu</h2>
+            <button id="close-cheat-menu">×</button>
+        </div>
+        <div class="cheat-content">
+            <div class="cheat-section">
+                <h3>Add Gems</h3>
+                <div class="cheat-control">
+                    <input type="number" id="gem-amount" min="1" max="100000" value="1000">
+                    <button id="add-gems-btn">Add Gems</button>
+                </div>
+            </div>
+            
+            <div class="cheat-section">
+                <h3>Rolling</h3>
+                <div class="cheat-control">
+                    <button id="toggle-cooldown-btn">Disable Cooldown</button>
+                    <button id="force-cosmic-btn">Force Cosmic Roll</button>
+                </div>
+            </div>
+            
+            <div class="cheat-section">
+                <h3>Luck Modifier</h3>
+                <div class="cheat-control luck-buttons">
+                    <button data-luck="1" class="luck-btn">x1</button>
+                    <button data-luck="2" class="luck-btn">x2</button>
+                    <button data-luck="5" class="luck-btn">x5</button>
+                    <button data-luck="10" class="luck-btn">x10</button>
+                    <button data-luck="100" class="luck-btn">x100</button>
+                </div>
+            </div>
+        </div>
+        <div class="cheat-footer">
+            <p>Warning: These cheats will affect game balance!</p>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

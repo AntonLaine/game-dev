@@ -1,174 +1,1216 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #e0f7fa;
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1e1e2f;
+    color: #ffffff;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+}
+
+h1 {
+    color: #ffcc00;
+    margin-bottom: 20px;
+    font-size: 2.5rem;
+    text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+}
+
+#game-header {
+    background-color: #333355;
+    padding: 15px;
+    margin-bottom: 20px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    height: 100vh;
-    position: relative;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
-#village-status {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 10px;
-    border-radius: 5px;
-    font-size: 14px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    z-index: 1;
+
+#rgb-display {
+    font-size: 24px;
+    font-weight: bold;
 }
-.button-container {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    display: flex;
-    flex-direction: column;
-    z-index: 1;
-}
-.button {
-    padding: 10px 20px;
-    margin: 10px 0;
-    background-color: #007bff;
-    color: #fff;
+
+#new-game {
+    background-color: #4CAF50;
+    color: white;
     border: none;
-    border-radius: 5px;
+    padding: 8px 15px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    border-radius: 4px;
 }
-.button:hover {
-    background-color: #0056b3;
+
+#message {
+    font-weight: bold;
+    width: 100px;
 }
-#village {
+
+#color-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.color-box {
+    height: 150px;
+    background-color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.color-box:hover {
+    transform: scale(1.05);
+}
+
+#roll-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 18px;
+    font-weight: bold;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+#roll-button:hover:not([disabled]) {
+    background-color: #3e8e41;
+    transform: scale(1.05);
+}
+
+#roll-button:disabled {
+    background-color: #7f8c8d;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+#roll-button::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #fff;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1.5s linear;
+}
+
+#roll-button.cooldown::after {
+    transform: scaleX(1);
+}
+
+#sell-button {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s;
+    margin-top: 10px;
+}
+
+#sell-button:hover:not([disabled]) {
+    background-color: #c0392b;
+    transform: scale(1.05);
+}
+
+#sell-button[disabled] {
+    background-color: #7f8c8d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+#gems-counter {
+    font-size: 20px;
+    font-weight: bold;
+    color: #00ccff;
+}
+
+#item-display {
+    background-color: #292942;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+#item-result {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+#item-image {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    border-radius: 10px;
+    border: 3px solid #555;
+    background-color: #333;
+    transition: all 0.5s ease;
+}
+
+#item-info {
+    text-align: left;
+    flex: 1;
+}
+
+#item-name {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+#item-rarity {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+#item-description {
+    font-size: 16px;
+    color: #ccc;
+}
+
+#roll-history {
+    background-color: #292942;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+#roll-history h2 {
+    margin-bottom: 15px;
+    color: #ddd;
+}
+
+#history-list {
     display: flex;
     flex-wrap: wrap;
+    gap: 10px;
     justify-content: center;
-    align-items: center;
-    width: 800px;
-    height: 800px;
-    background-color: #c8e6c9;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    position: relative;
-    overflow: hidden; /* Ensure humans stay within the box */
 }
-.house {
-    width: 50px;
-    height: 50px;
-    background-color: #ffcc80;
-    border: 2px solid #ffab40;
+
+.history-item {
+    width: 80px;
+    text-align: center;
+    padding: 5px;
     border-radius: 5px;
-    margin: 5px;
+}
+
+.common {
+    color: #aaaaaa;
+    background-color: #444;
+}
+
+.uncommon {
+    color: #1eff00;
+    background-color: #2a442a;
+}
+
+.rare {
+    color: #0070dd;
+    background-color: #2a3444;
+}
+
+.epic {
+    color: #a335ee;
+    background-color: #3a2a44;
+}
+
+.legendary {
+    color: #ff8000;
+    background-color: #443a2a;
+    animation: pulse 2s infinite;
+}
+
+.mythic {
+    color: #e91e63;
+    background-color: #4a1a29;
+    animation: mythicPulse 1.5s infinite;
+    text-shadow: 0 0 10px #e91e63;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 128, 0, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(255, 128, 0, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 128, 0, 0); }
+}
+
+@keyframes mythicPulse {
+    0% { box-shadow: 0 0 0 0 rgba(233, 30, 99, 0.6); }
+    50% { box-shadow: 0 0 15px 5px rgba(233, 30, 99, 0.8); }
+    100% { box-shadow: 0 0 0 0 rgba(233, 30, 99, 0.6); }
+}
+
+.rolling {
+    animation: spin 0.5s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#inventory-section {
+    background-color: #292942;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+#inventory-section h2 {
+    margin-bottom: 15px;
+    color: #ddd;
+}
+
+#inventory-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.inventory-item {
     position: relative;
+    width: 80px;
+    height: 80px;
+    background-color: #333;
+    border-radius: 8px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s;
 }
-.house.on-fire {
-    background-color: #ff7043;
-    border-color: #d84315;
-    animation: burn 1s infinite;
+
+.inventory-item:hover {
+    transform: scale(1.1);
+    z-index: 10;
 }
-.human {
-    width: 20px;
-    height: 40px;
-    background-color: #ff5722;
-    border-radius: 10px;
+
+.inventory-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.inventory-item .item-count {
     position: absolute;
-    animation: wander 10s infinite;
+    bottom: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 2px 5px;
+    font-size: 12px;
+    border-top-left-radius: 5px;
 }
-.human::before {
-    content: '';
-    width: 20px;
-    height: 20px;
-    background-color: #ffcc80;
-    border-radius: 50%;
+
+.inventory-item .item-border {
     position: absolute;
-    top: -20px;
+    top: 0;
     left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    pointer-events: none;
 }
-.human .left-hand, .human .right-hand {
-    width: 5px;
-    height: 20px;
-    background-color: #ffcc80;
-    position: absolute;
-    top: 10px;
-    transform-origin: top;
+
+.inventory-item .common-border { border-color: #aaaaaa; }
+.inventory-item .uncommon-border { border-color: #1eff00; }
+.inventory-item .rare-border { border-color: #0070dd; }
+.inventory-item .epic-border { border-color: #a335ee; }
+.inventory-item .legendary-border { 
+    border-color: #ff8000; 
+    animation: borderPulse 2s infinite;
 }
-.human .left-hand {
-    left: -5px;
-    animation: wave 2s infinite;
+.inventory-item .mythic-border { 
+    border-color: #e91e63; 
+    border-width: 3px;
+    animation: mythicBorderPulse 1.5s infinite;
 }
-.human .right-hand {
-    right: -5px;
-    animation: wave 2s infinite;
+
+@keyframes borderPulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 128, 0, 0.4); }
+    70% { box-shadow: 0 0 0 5px rgba(255, 128, 0, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 128, 0, 0); }
 }
-.human.dancing .left-hand, .human.dancing .right-hand {
-    animation: dance 1s infinite;
+
+@keyframes mythicBorderPulse {
+    0% { box-shadow: 0 0 0 0 rgba(233, 30, 99, 0.6); }
+    50% { box-shadow: 0 0 10px 2px rgba(233, 30, 99, 0.8); }
+    100% { box-shadow: 0 0 0 0 rgba(233, 30, 99, 0.6); }
 }
-.soldier {
-    background-color: grey;
-}
-.soldier .left-hand {
-    background-color: #ffcc80;
-}
-.soldier .sword {
-    content: '';
-    width: 5px;
-    height: 20px;
-    background-color: silver;
-    position: absolute;
-    top: 10px;
-    left: -10px;
-    transform: rotate(45deg);
-}
-.soldier.attacking {
-    background-color: darkgrey;
-}
-.attacker {
-    width: 20px;
-    height: 40px;
-    background-color: red;
-    border-radius: 10px;
-    position: absolute;
-    animation: wander 10s infinite;
-}
-.attacker::before {
-    content: '';
-    width: 20px;
-    height: 20px;
-    background-color: #ffcc80;
-    border-radius: 50%;
-    position: absolute;
-    top: -20px;
+
+#mythic-animation {
+    position: fixed;
+    top: 0;
     left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 1000;
 }
-.castle {
-    width: 100px;
-    height: 100px;
-    background-color: #9e9e9e;
-    border: 3px solid #757575;
-    border-radius: 10px;
+
+.hidden {
+    display: none !important;
+}
+
+.mythic-glow {
     position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(233, 30, 99, 0.4) 0%, rgba(30, 30, 47, 0) 70%);
+    animation: glowPulse 2s infinite;
+}
+
+.mythic-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle, #e91e63 1px, transparent 1px),
+        radial-gradient(circle, #e91e63 1px, transparent 1px);
+    background-size: 20px 20px;
+    animation: particleMove 20s linear infinite;
+}
+
+.mythic-text {
+    font-size: 4rem;
+    font-weight: bold;
+    color: #e91e63;
+    text-shadow: 0 0 20px #e91e63;
+    animation: textPulse 1s infinite;
+}
+
+@keyframes glowPulse {
+    0% { opacity: 0.3; }
+    50% { opacity: 0.7; }
+    100% { opacity: 0.3; }
+}
+
+@keyframes particleMove {
+    0% { background-position: 0 0, 10px 10px; }
+    100% { background-position: 1000px 1000px, 1010px 1010px; }
+}
+
+@keyframes textPulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
+}
+
+#toggle-shop-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 18px;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+#toggle-shop-btn:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
+}
+
+#notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 25px;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+#notification.show {
+    opacity: 1;
+}
+
+#notification.success {
+    background-color: #2ecc71;
+}
+
+#notification.error {
+    background-color: #e74c3c;
+}
+
+#notification.info {
+    background-color: #3498db;
+}
+
+#shop-section {
+    background-color: #292942;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+#shop-section h2 {
+    margin-bottom: 15px;
+    color: #ddd;
+}
+
+.shop-intro {
+    margin-bottom: 20px;
+    color: #aaa;
+}
+
+#upgrades-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.upgrade-item {
+    background-color: #333355;
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s;
+}
+
+.upgrade-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.upgrade-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.upgrade-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.upgrade-cost {
+    color: #00ccff;
+    font-weight: bold;
+}
+
+.upgrade-description {
+    color: #ccc;
+    margin-bottom: 10px;
+    flex-grow: 1;
+}
+
+.upgrade-level {
+    margin-bottom: 10px;
+    color: #1eff00;
+}
+
+.upgrade-effect {
+    color: #ff8000;
+    font-style: italic;
+    margin-bottom: 15px;
+}
+
+.upgrade-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.upgrade-button:hover:not([disabled]) {
+    background-color: #3e8e41;
+    transform: scale(1.05);
+}
+
+.upgrade-button[disabled] {
+    background-color: #7f8c8d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.upgrade-maxed {
+    background-color: #e67e22;
+}
+
+.inventory-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+#sell-all-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+#sell-all-btn:hover {
+    background-color: #c0392b;
+    transform: scale(1.05);
+}
+
+.sell-by-rarity {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.sell-rarity-btn {
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.sell-rarity-btn:hover {
+    transform: scale(1.05);
+}
+
+.sell-rarity-btn.common {
+    background-color: #444;
+    color: #aaaaaa;
+}
+
+.sell-rarity-btn.uncommon {
+    background-color: #2a442a;
+    color: #1eff00;
+}
+
+.sell-rarity-btn.rare {
+    background-color: #2a3444;
+    color: #0070dd;
+}
+
+/* Cosmic animation styles */
+#cosmic-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 1001;
+}
+
+.cosmic-backdrop {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, #000435, #000);
+    opacity: 0.9;
+    animation: cosmicFadeIn 1s forwards;
+}
+
+.cosmic-stars {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(2px 2px at 20px 30px, #eef, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 50px 160px, #ddf, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 130px 80px, #fff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 160px 120px, #ddf, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    animation: twinkle 5s infinite;
+}
+
+.cosmic-rays {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, transparent 0%, transparent 30%, #7d09af66 70%, transparent 100%);
+    opacity: 0;
+    animation: cosmicRays 3s infinite;
+}
+
+.cosmic-text {
+    font-size: 4.5rem;
+    font-weight: bold;
+    background: linear-gradient(to right, #9400D3, #4B0082, #0000FF, #00FF00, #FFFF00, #FF7F00, #FF0000);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: cosmicTextReveal 1s 0.5s forwards;
+    text-align: center;
+}
+
+.cosmic-subtext {
+    font-size: 2rem;
+    color: #fff;
+    text-shadow: 0 0 10px #fff;
+    opacity: 0;
+    animation: cosmicTextReveal 1s 1.5s forwards;
+}
+
+.cosmic {
+    color: transparent;
+    background: linear-gradient(to right, #9400D3, #4B0082, #0000FF, #00FF00, #FFFF00, #FF7F00, #FF0000);
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: cosmicShimmer 2s infinite;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.inventory-item .cosmic-border {
+    border-color: transparent;
+    border-width: 3px;
+    box-shadow: 0 0 15px 5px rgba(255, 255, 255, 0.7);
+    background: linear-gradient(45deg, #9400D3, #4B0082, #0000FF, #00FF00, #FFFF00, #FF7F00, #FF0000);
+    animation: rainbowBorder 2s linear infinite;
+}
+
+@keyframes cosmicFadeIn {
+    from { opacity: 0; }
+    to { opacity: 0.9; }
+}
+
+@keyframes cosmicTextReveal {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cosmicRays {
+    0% { opacity: 0; transform: scale(0.8); }
+    50% { opacity: 0.5; transform: scale(1.1); }
+    100% { opacity: 0; transform: scale(0.8); }
+}
+
+@keyframes twinkle {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+}
+
+@keyframes cosmicShimmer {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+
+@keyframes rainbowBorder {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+/* Cheat Menu Styles */
+#cheat-menu {
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    width: 400px;
+    background-color: #212135;
+    border: 2px solid #ff5722;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(255, 87, 34, 0.5);
+    z-index: 1002;
+    padding: 0;
+    overflow: hidden;
 }
-@keyframes wander {
-    0% { top: 10%; left: 10%; }
-    25% { top: 10%; left: 90%; }
-    50% { top: 90%; left: 90%; }
-    75% { top: 90%; left: 10%; }
-    100% { top: 10%; left: 10%; }
+
+.cheat-header {
+    background-color: #ff5722;
+    color: #fff;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
-@keyframes wave {
-    0%, 100% { transform: rotate(0deg); }
-    50% { transform: rotate(45deg); }
+
+.cheat-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
 }
-@keyframes dance {
-    0%, 100% { transform: rotate(0deg); }
-    50% { transform: rotate(-45deg); }
+
+#close-cheat-menu {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0 5px;
 }
-@keyframes burn {
-    0%, 100% { box-shadow: 0 0 10px rgba(255, 87, 34, 0.5); }
-    50% { box-shadow: 0 0 20px rgba(255, 87, 34, 1); }
+
+.cheat-content {
+    padding: 15px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.cheat-section {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #3d3d5c;
+    padding-bottom: 15px;
+}
+
+.cheat-section h3 {
+    color: #ff5722;
+    margin-bottom: 10px;
+}
+
+.cheat-control {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+#gem-amount {
+    flex: 1;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #3d3d5c;
+    background-color: #2a2a42;
+    color: #fff;
+}
+
+.cheat-control button {
+    background-color: #3d3d5c;
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.cheat-control button:hover {
+    background-color: #4b4b72;
+}
+
+#add-gems-btn, #force-cosmic-btn {
+    background-color: #ff5722;
+}
+
+#add-gems-btn:hover, #force-cosmic-btn:hover {
+    background-color: #e64a19;
+}
+
+.luck-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.luck-btn {
+    flex: 1;
+    margin: 0 5px;
+}
+
+.luck-btn.active {
+    background-color: #ff5722;
+}
+
+.cheat-footer {
+    background-color: #2a2a42;
+    padding: 10px 15px;
+    text-align: center;
+    color: #ff5722;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+/* New rarity styles */
+.ancient {
+    color: #4a2202;
+    background: linear-gradient(to right, #c19a49, #614e33, #c19a49);
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: ancientGlow 3s infinite;
+    text-shadow: 0 0 5px rgba(193, 154, 73, 0.7);
+}
+
+.divine {
+    color: transparent;
+    background: linear-gradient(to right, #ffffff, #fffacd, #ffffff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: divineShimmer 2s infinite;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+}
+
+.primordial {
+    color: transparent;
+    background: linear-gradient(to right, #000000, #800080, #ff0000, #ffa500, #ffff00, #008000, #0000ff, #4b0082);
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: primordialFlow 5s linear infinite;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+}
+
+.inventory-item .ancient-border {
+    border: none;
+    box-shadow: 0 0 10px rgba(193, 154, 73, 0.8);
+    background: 
+        linear-gradient(to right, #c19a49, #614e33, #c19a49),
+        linear-gradient(to right, #000, #000) padding-box;
+    background-clip: border-box, padding-box;
+    border: 3px solid transparent;
+    animation: ancientBorderGlow 3s infinite;
+}
+
+.inventory-item .divine-border {
+    border: none;
+    border: 3px solid transparent;
+    background: 
+        linear-gradient(45deg, #ffffff, #fffacd, #ffffff),
+        linear-gradient(to right, #000, #000) padding-box;
+    background-clip: border-box, padding-box;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
+    animation: divineBorderPulse 2s infinite;
+}
+
+.inventory-item .primordial-border {
+    border: none;
+    border: 4px solid transparent;
+    background: 
+        linear-gradient(45deg, #000000, #800080, #ff0000, #ffa500, #ffff00, #008000, #0000ff, #4b0082),
+        linear-gradient(to right, #000, #000) padding-box;
+    background-clip: border-box, padding-box;
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.8);
+    animation: primordialBorderFlow 5s linear infinite;
+}
+
+/* Ancient Animation */
+#ancient-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 1001;
+}
+
+.ancient-backdrop {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, #2e1e0c, #000);
+    opacity: 0.9;
+    animation: ancientFadeIn 1s forwards;
+}
+
+.ancient-symbols {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><text x="10" y="30" font-family="serif" font-size="30" fill="rgba(193,154,73,0.5)">𓀀</text></svg>'),
+                       url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><text x="10" y="30" font-family="serif" font-size="30" fill="rgba(193,154,73,0.5)">𓁹</text></svg>'),
+                       url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><text x="10" y="30" font-family="serif" font-size="30" fill="rgba(193,154,73,0.5)">𓂀</text></svg>');
+    background-repeat: repeat;
+    background-size: 100px 100px;
+    opacity: 0;
+    animation: ancientSymbolsReveal 3s forwards;
+}
+
+.ancient-text {
+    font-size: 4rem;
+    font-weight: bold;
+    color: #c19a49;
+    text-shadow: 0 0 15px rgba(193, 154, 73, 0.8);
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: ancientTextReveal 1s 0.5s forwards;
+    text-align: center;
+}
+
+.ancient-subtext {
+    font-size: 2rem;
+    color: #c19a49;
+    text-shadow: 0 0 10px rgba(193, 154, 73, 0.6);
+    opacity: 0;
+    animation: ancientTextReveal 1s 1.5s forwards;
+}
+
+/* Divine Animation */
+#divine-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 1001;
+}
+
+.divine-backdrop {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, #ffffff, #fffacd);
+    opacity: 0;
+    animation: divineFadeIn 2s forwards;
+}
+
+.divine-light {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 70%);
+    opacity: 0;
+    animation: divineLightPulse 3s infinite;
+}
+
+.divine-rays {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(0deg, transparent 0%, rgba(255,255,255,0.8) 50%, transparent 100%),
+        linear-gradient(45deg, transparent 0%, rgba(255,255,255,0.8) 50%, transparent 100%),
+        linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.8) 50%, transparent 100%),
+        linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.8) 50%, transparent 100%);
+    background-size: 200% 200%;
+    opacity: 0;
+    animation: divineRays 5s infinite;
+}
+
+.divine-text {
+    font-size: 4.5rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 1);
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: divineTextReveal 1s 0.5s forwards;
+    text-align: center;
+    z-index: 10;
+}
+
+.divine-subtext {
+    font-size: 2rem;
+    color: white;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 1);
+    opacity: 0;
+    animation: divineTextReveal 1s 1.5s forwards;
+    z-index: 10;
+}
+
+/* Primordial Animation */
+#primordial-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 1001;
+}
+
+.primordial-backdrop {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    opacity: 0;
+    animation: primordialFadeIn 1s forwards;
+}
+
+.primordial-vortex {
+    position: absolute;
+    width: 300%;
+    height: 300%;
+    top: -100%;
+    left: -100%;
+    background: conic-gradient(
+        from 0deg,
+        #000000, #800080, #ff0000, #ffa500, 
+        #ffff00, #008000, #0000ff, #4b0082, #000000
+    );
+    opacity: 0.7;
+    animation: primordialSpin 20s linear infinite;
+}
+
+.primordial-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(2px 2px at 20px 30px, white, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 40px 70px, white, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 50px 160px, white, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 90px 40px, white, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 130px 80px, white, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 160px 120px, white, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    animation: primordialStars 30s linear infinite;
+}
+
+.primordial-text {
+    font-size: 4.5rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 0 25px rgba(255, 255, 255, 1);
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: primordialTextReveal 1s 0.5s forwards;
+    text-align: center;
+    z-index: 10;
+}
+
+.primordial-subtext {
+    font-size: 2rem;
+    color: white;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 1);
+    opacity: 0;
+    animation: primordialTextReveal 1s 1.5s forwards;
+    z-index: 10;
+}
+
+/* Animation keyframes for new rarities */
+@keyframes ancientGlow {
+    0% { text-shadow: 0 0 5px rgba(193, 154, 73, 0.7); }
+    50% { text-shadow: 0 0 15px rgba(193, 154, 73, 1); }
+    100% { text-shadow: 0 0 5px rgba(193, 154, 73, 0.7); }
+}
+
+@keyframes divineShimmer {
+    0% { filter: brightness(1); }
+    50% { filter: brightness(1.5); }
+    100% { filter: brightness(1); }
+}
+
+@keyframes primordialFlow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+@keyframes ancientBorderGlow {
+    0% { box-shadow: 0 0 10px rgba(193, 154, 73, 0.7); }
+    50% { box-shadow: 0 0 20px rgba(193, 154, 73, 1); }
+    100% { box-shadow: 0 0 10px rgba(193, 154, 73, 0.7); }
+}
+
+@keyframes divineBorderPulse {
+    0% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.7); }
+    50% { box-shadow: 0 0 25px rgba(255, 255, 255, 1); }
+    100% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.7); }
+}
+
+@keyframes primordialBorderFlow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+@keyframes ancientFadeIn {
+    from { opacity: 0; }
+    to { opacity: 0.9; }
+}
+
+@keyframes ancientSymbolsReveal {
+    0% { opacity: 0; }
+    50% { opacity: 0.8; }
+    100% { opacity: 0.4; }
+}
+
+@keyframes ancientTextReveal {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes divineFadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 0.7; }
+}
+
+@keyframes divineLightPulse {
+    0% { opacity: 0.2; transform: scale(0.8); }
+    50% { opacity: 0.8; transform: scale(1.2); }
+    100% { opacity: 0.2; transform: scale(0.8); }
+}
+
+@keyframes divineRays {
+    0% { opacity: 0.3; transform: rotate(0deg); }
+    50% { opacity: 0.7; }
+    100% { opacity: 0.3; transform: rotate(360deg); }
+}
+
+@keyframes divineTextReveal {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes primordialFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes primordialSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes primordialStars {
+    0% { background-position: 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px; }
+    100% { background-position: 500px 500px, 400px 400px, 300px 300px, 200px 200px, 100px 100px, 0px 0px; }
+}
+
+@keyframes primordialTextReveal {
+    from { opacity: 0; transform: scale(0.5); }
+    to { opacity: 1; transform: scale(1); }
 }
