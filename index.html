@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Car Driving Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="info">
+        <h1>3D Car Driving Game</h1>
+        <p>Use WASD or arrow keys to drive</p>
+        <div id="speed">Speed: 0 km/h</div>
+    </div>
+    
+    <div class="controls-hint">
+        WASD/Arrows: Drive | Space: Handbrake/Drift | Collect yellow rings for points!
+    </div>
+    
+    <div id="game-container"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/car.js"></script>
+    <script src="js/track.js"></script>
+    <script src="js/controls.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
