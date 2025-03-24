@@ -1,0 +1,234 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f0f0;
+    overflow: hidden; /* Prevent scrollbars in fullscreen */
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Fullscreen mode */
+.app-container.fullscreen {
+    max-width: none;
+    width: 100%;
+    height: 100vh;
+}
+
+header {
+    padding: 15px;
+    background-color: #333;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+button {
+    padding: 8px 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+input[type="number"] {
+    width: 50px;
+    text-align: center;
+}
+
+main {
+    display: flex;
+    flex: 1;
+}
+
+.tools-panel {
+    width: 80px;
+    background-color: #f5f5f5;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.tool {
+    padding: 10px;
+    text-align: center;
+    background-color: #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.tool.active {
+    background-color: #aaa;
+    color: white;
+}
+
+.canvas-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #e5e5e5;
+    padding: 20px;
+    overflow: auto;
+}
+
+canvas {
+    background-color: white;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+footer {
+    padding: 15px;
+    background-color: #333;
+    display: flex;
+    height: 150px;
+}
+
+.timeline {
+    flex: 1;
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 10px;
+    background-color: #444;
+    align-items: center;
+}
+
+.frame {
+    width: 100px;
+    height: 100px;
+    background-color: #555;
+    border: 2px solid transparent;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.frame.active {
+    border-color: #4CAF50;
+}
+
+.preview {
+    width: 200px;
+    margin-left: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#preview-canvas {
+    border: 1px solid #666;
+}
+
+.color-picker, .brush-size {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+input[type="color"] {
+    width: 40px;
+    height: 40px;
+    border: none;
+}
+
+input[type="range"] {
+    width: 100%;
+}
+
+/* Brush preview */
+.brush-preview-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+    height: 60px;
+}
+
+.brush-preview {
+    border-radius: 50%;
+    background-color: #000;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Animation overlay */
+.animation-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s ease;
+}
+
+.animation-overlay.visible {
+    display: flex;
+    opacity: 1;
+}
+
+.close-overlay {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background-color: #f44336;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 1001;
+    border: none;
+    transition: background-color 0.2s ease;
+}
+
+.close-overlay:hover {
+    background-color: #d32f2f;
+}
+
+#overlay-canvas {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}

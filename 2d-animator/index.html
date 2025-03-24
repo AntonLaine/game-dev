@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D Animator</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <!-- Fullscreen animation overlay -->
+    <div id="animation-overlay" class="animation-overlay">
+        <canvas id="overlay-canvas"></canvas>
+        <button id="close-overlay" class="close-overlay">×</button>
+    </div>
+
+    <div class="app-container">
+        <header>
+            <h1>2D Animator</h1>
+            <div class="controls">
+                <button id="new-frame">New Frame</button>
+                <button id="duplicate-frame">Duplicate Frame</button>
+                <button id="delete-frame">Delete Frame</button>
+                <button id="play">Play</button>
+                <button id="stop">Stop</button>
+                <input type="number" id="fps" min="1" max="60" value="12">
+                <label for="fps">FPS</label>
+                <button id="export-video">Export Video</button>
+                <button id="toggle-fullscreen">Fullscreen</button>
+            </div>
+        </header>
+        
+        <main>
+            <div class="tools-panel">
+                <div class="tool" data-tool="brush">
+                    <span>Brush</span>
+                </div>
+                <div class="tool" data-tool="eraser">
+                    <span>Eraser</span>
+                </div>
+                <div class="tool" data-tool="fill">
+                    <span>Fill</span>
+                </div>
+                <div class="color-picker">
+                    <input type="color" id="color-picker" value="#000000">
+                </div>
+                <div class="brush-size">
+                    <input type="range" id="brush-size" min="1" max="50" value="5">
+                </div>
+                <div class="brush-preview-container">
+                    <div id="brush-preview" class="brush-preview"></div>
+                </div>
+            </div>
+            
+            <div class="canvas-container">
+                <canvas id="animation-canvas" width="800" height="600"></canvas>
+            </div>
+        </main>
+        
+        <footer>
+            <div class="timeline" id="timeline">
+                <!-- Frames will be added here -->
+            </div>
+            <div class="preview">
+                <canvas id="preview-canvas" width="200" height="150"></canvas>
+            </div>
+        </footer>
+    </div>
+
+    <script src="scripts/canvas.js"></script>
+    <script src="scripts/timeline.js"></script>
+    <script src="scripts/export.js"></script>
+    <script src="scripts/app.js"></script>
+</body>
+</html>
