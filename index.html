@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rocketball 3D</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <!-- Switch to a direct CDN that exposes CANNON globally -->
+    <script src="https://cdn.jsdelivr.net/npm/cannon@0.6.2/build/cannon.min.js"></script>
+</head>
+<body>
+    <div class="game-container">
+        <div id="score-board">
+            <div id="blue-score">0</div>
+            <div id="timer">2:00</div>
+            <div id="orange-score">0</div>
+        </div>
+        <div id="game-area"></div>
+        <div id="controls-info">
+            <p>WASD: Move | Space: Jump | Shift: Boost | Arrow keys: Camera</p>
+        </div>
+        <button id="start-button">Start Game</button>
+        <div id="game-over" class="hidden">
+            <h2>Game Over!</h2>
+            <p id="winner-text">Blue team wins!</p>
+            <p>Score: <span id="final-blue-score">0</span> - <span id="final-orange-score">0</span></p>
+            <button id="restart-button">Play Again</button>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
