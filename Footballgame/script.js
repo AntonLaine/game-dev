@@ -1447,6 +1447,7 @@ function toggleAnimation() {
 // Handle mouse down - start charging kick
 function handleMouseDown(event) {
     if (event.button === 0 && isPointerLocked) { // Left mouse button
+        if (ultimateActive) return; // Prevent kick charging during ultimate
         if (isCharging) return;
         isCharging = true;
         chargeStartTime = Date.now();
@@ -4466,3 +4467,525 @@ function executeGuaranteedGoalKick() {
     
     // ...rest of existing code...
 }
+
+// Remove the duplicate ultimate variable declarations at the bottom of the file
+// and fix the functionality to properly rename superShot to ultimate
+
+// Remove these lines (around line ~3300):
+// let ultimateCooldown = false;
+// const ultimateCooldownTime = 60000; // 1 minute cooldown
+// let ultimateActive = false;
+
+// Update UI indicator for the ultimate ability by reusing superShotUI
+const ultimateUI = superShotUI; // Reuse the existing UI element
+ultimateIcon.style.background = "#555555";
+ultimateIcon.style.boxShadow = "none";
+ultimateText.textContent = "Ultimate: Not Available (G)";
+
+// Modify the G key handler to show ultimate not available message
+document.addEventListener('keydown', (event) => {
+    // ...existing code for other keys...
+    
+    // G key to show ultimate not available message
+    if (event.code === 'KeyG' && isPointerLocked) {
+        showUltimateMessage('Ultimate ability not available', '#ff3366');
+    }
+}, { once: false });
+
+// Rename the superShot functions to ultimate equivalents
+function showUltimateMessage(message, color) {
+    // This reuses the existing showSuperShotMessage function logic with a renamed function
+    const ultimateMessage = document.createElement('div');
+    ultimateMessage.style.cssText = `
+        position: absolute;
+        top: 30%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.7);
+        color: ${color};
+        padding: 15px 30px;
+        border-radius: 5px;
+        font-family: Arial, sans-serif;
+        font-size: 32px;
+        font-weight: bold;
+        z-index: 1000;
+        text-shadow: 0 0 15px rgba(255, 51, 102, 0.7);
+        opacity: 0;
+    `;
+    ultimateMessage.textContent = message;
+    document.body.appendChild(ultimateMessage);
+    
+    // Animation
+    gsap.to(ultimateMessage, {
+        opacity: 1,
+        duration: 0.3,
+        ease: "power2.out",
+        onComplete: () => {
+            gsap.to(ultimateMessage, {
+                opacity: 0,
+                delay: 1.2,
+                duration: 0.5,
+                onComplete: () => {
+                    document.body.removeChild(ultimateMessage);
+                }
+            });
+        }
+    });
+}
+
+// Remove the G key handler for super shot by nullifying the performSuperShot function
+// This prevents any code paths from calling it
+function performSuperShot() {
+    showUltimateMessage('Ultimate ability not available', '#ff3366');
+}
+
+// Update showGameUI to show ultimate UI but not create play button
+function showGameUI() {
+    // Show heel flick UI
+    heelFlickUI.style.display = 'flex';
+    
+    // Show ultimate UI
+    ultimateUI.style.display = 'flex';
+}
+
+// Update hideGameUI to hide all UI elements
+function hideGameUI(removeElements = false) {
+    // Hide heel flick UI
+    heelFlickUI.style.display = 'none';
+    
+    // Hide ultimate UI
+    ultimateUI.style.display = 'none';
+}
+
+// Remove the reference to checking super shot cooldown in the animate function
+const prevanimate = animate;
+animate = function() {
+    requestAnimationFrame(animate);
+    const delta = clock.getDelta();
+    
+    if (isPointerLocked) {
+        updatePlayerMovement(delta);
+    }
+    
+    updateBallPhysics(delta);
+    updateChargeMeter();
+    updateCurveHelper();
+    checkGoal();
+    
+    renderer.render(scene, camera);
+};
+
+// ...existing code...
+
+// Rename super shot to ultimate throughout the code
+let ultimateCooldown = false; // Use existing variable instead of superShotCooldown
+const ultimateCooldownTime = 60000; // 1 minute cooldown
+let ultimateActive = false; // Use existing variable instead of superShotActive
+let ultimateCooldownStart = 0;
+let ultimateNotified = false;
+
+// Rename UI elements from superShot to ultimate
+// Use the existing UI that was created for super shot
+const ultimateUI = document.createElement('div');
+ultimateUI.style.cssText = `
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-family: Arial;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+`;
+
+const ultimateIcon = document.createElement('div');
+ultimateIcon.style.cssText = `
+    width: 20px;
+    height: 20px;
+    background: #ff3366;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #ff3366;
+    transition: all 0.3s ease;
+`;
+
+const ultimateText = document.createElement('div');
+ultimateText.textContent = "Ultimate: Ready (G)";
+
+ultimateUI.appendChild(ultimateIcon);
+ultimateUI.appendChild(ultimateText);
+document.body.appendChild(ultimateUI);
+
+// Add G key handler for ultimate ability
+document.addEventListener('keydown', (event) => {
+    // ...existing code for other keys...
+    
+    // G key to activate ultimate ability (formerly super shot)
+    if (event.code === 'KeyG' && isPointerLocked && !ultimateCooldown && !ultimateActive && !isCharging) {
+        performUltimate();
+    }
+});
+
+// Rename superShot functions to ultimate
+function performUltimate() {
+    // Check if ball is in control range
+    if (!checkBallInControlRange()) {
+        showUltimateMessage('Ball not in control range!', '#ff3366');
+        return;
+    }
+    
+    // Set cooldown and active state
+    ultimateActive = true;
+    ultimateCooldown = true;
+    ultimateCooldownStart = Date.now();
+    ultimateNotified = false;
+    updateUltimateUI();
+    
+    // Store original camera position and rotation
+    const originalCameraPosition = camera.position.clone();
+    const originalCameraRotation = camera.rotation.clone();
+    const originalPlayerPosition = human.position.clone();
+    
+    // Move camera to view the player (third-person view)
+    const cameraTargetPosition = human.position.clone().add(new THREE.Vector3(5, 3, 5));
+    
+    // Show activation message
+    showUltimateMessage('ULTIMATE CHARGING!', '#ff3366');
+    
+    // Animate camera movement
+    gsap.to(camera.position, {
+        x: cameraTargetPosition.x,
+        y: cameraTargetPosition.y,
+        z: cameraTargetPosition.z,
+        duration: 1.2,
+        ease: "power2.inOut",
+        onUpdate: function() {
+            // Make camera look at the player
+            camera.lookAt(human.position);
+        }
+    });
+    
+    // Create ground breaking effect
+    setTimeout(() => {
+        // First wave of ground breaking
+        createGroundBreakingEffect(human.position, 6);
+        
+        setTimeout(() => {
+            // Second wave of ground breaking (larger radius)
+            createGroundBreakingEffect(human.position, 10);
+            showUltimateMessage('UNLEASHING POWER!', '#ff3366');
+            
+            // Add player lift-off effect
+            gsap.to(human.position, {
+                y: human.position.y + 0.5,
+                duration: 0.8,
+                ease: "power2.out"
+            });
+            
+            // Create energy gathering effect
+            createEnergyGatheringEffect(human.position);
+            
+            setTimeout(() => {
+                // Third and final wave of ground breaking
+                createGroundBreakingEffect(human.position, 15);
+                
+                // Flash screen effect
+                flashScreen();
+                
+                // Return camera to original position
+                gsap.to(camera.position, {
+                    x: originalCameraPosition.x,
+                    y: originalCameraPosition.y,
+                    z: originalCameraPosition.z,
+                    duration: 1,
+                    ease: "power2.inOut",
+                    onUpdate: function() {
+                        // Gradually restore original camera rotation
+                        camera.rotation.set(
+                            camera.rotation.x + (originalCameraRotation.x - camera.rotation.x) * 0.1,
+                            camera.rotation.y + (originalCameraRotation.y - camera.rotation.y) * 0.1,
+                            camera.rotation.z + (originalCameraRotation.z - camera.rotation.z) * 0.1
+                        );
+                    },
+                    onComplete: function() {
+                        // Restore exact original rotation
+                        camera.rotation.copy(originalCameraRotation);
+                        
+                        // Return player to original height
+                        gsap.to(human.position, {
+                            y: originalPlayerPosition.y,
+                            duration: 0.5,
+                            ease: "bounce.out"
+                        });
+                        
+                        // Execute the guaranteed goal kick
+                        executeGuaranteedGoalKick();
+                        
+                        // End ultimate sequence
+                        ultimateActive = false;
+                    }
+                });
+            }, 1200);
+        }, 800);
+    }, 1000);
+    
+    // Reset cooldown after the full duration
+    setTimeout(() => {
+        ultimateCooldown = false;
+        updateUltimateUI();
+        
+        // Play a sound when ability is ready again
+        playAbilityReadySound();
+    }, ultimateCooldownTime);
+}
+
+// Show ultimate message (renamed from showSuperShotMessage)
+function showUltimateMessage(message, color) {
+    const ultimateMessage = document.createElement('div');
+    ultimateMessage.style.cssText = `
+        position: absolute;
+        top: 30%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.7);
+        color: ${color};
+        padding: 15px 30px;
+        border-radius: 5px;
+        font-family: Arial, sans-serif;
+        font-size: 32px;
+        font-weight: bold;
+        z-index: 1000;
+        text-shadow: 0 0 15px rgba(255, 51, 102, 0.7);
+        opacity: 0;
+    `;
+    ultimateMessage.textContent = message;
+    document.body.appendChild(ultimateMessage);
+    
+    // Animation
+    gsap.to(ultimateMessage, {
+        opacity: 1,
+        duration: 0.3,
+        ease: "power2.out",
+        onComplete: () => {
+            gsap.to(ultimateMessage, {
+                opacity: 0,
+                delay: 1.2,
+                duration: 0.5,
+                onComplete: () => {
+                    document.body.removeChild(ultimateMessage);
+                }
+            });
+        }
+    });
+}
+
+// Update ultimate UI (renamed from updateSuperShotUI)
+function updateUltimateUI() {
+    if (ultimateCooldown) {
+        // Calculate remaining time
+        const remainingTime = Math.max(0, Math.ceil((ultimateCooldownTime - (Date.now() - ultimateCooldownStart)) / 1000));
+        
+        ultimateIcon.style.background = "#555555";
+        ultimateIcon.style.boxShadow = "none";
+        ultimateText.textContent = `Ultimate: ${remainingTime}s (G)`;
+        
+        // Update every second if the cooldown is active
+        if (remainingTime > 0) {
+            setTimeout(() => updateUltimateUI(), 1000);
+        }
+    } else {
+        ultimateIcon.style.background = "#ff3366";
+        ultimateIcon.style.boxShadow = "0 0 10px #ff3366";
+        ultimateText.textContent = "Ultimate: Ready (G)";
+    }
+}
+
+// Update showGameUI function to show ultimate UI
+function showGameUI() {
+    // Show heel flick UI
+    heelFlickUI.style.display = 'flex';
+    
+    // Show ultimate UI
+    ultimateUI.style.display = 'flex';
+}
+
+// Update hideGameUI function to hide all UI elements
+function hideGameUI(removeElements = false) {
+    // Hide heel flick UI
+    heelFlickUI.style.display = 'none';
+    
+    // Hide ultimate UI
+    ultimateUI.style.display = 'none';
+}
+
+// Override checkGoal to guarantee goal from ultimate shot
+// We'll keep using the superShot flag in ball.userData for compatibility
+const originalCheckGoal = checkGoal;
+checkGoal = function() {
+    // If this is an ultimate shot, guarantee a goal and skip normal checking
+    if (ball.userData.superShot) {
+        // Check if we've reached either goal line
+        const goals = [
+            { x: 0, z: -30, dir: 1, name: "South" },  // South goal
+            { x: 0, z: 30, dir: -1, name: "North" }   // North goal
+        ];
+        
+        // Determine which goal we're approaching
+        let targetGoal;
+        if (ball.userData.targetGoal) {
+            targetGoal = ball.userData.targetGoal;
+        } else {
+            // Find the goal we're moving towards
+            const vel = ball.userData.velocity;
+            if (vel.z > 0) {
+                targetGoal = goals[1]; // North goal
+            } else {
+                targetGoal = goals[0]; // South goal
+            }
+            ball.userData.targetGoal = targetGoal;
+        }
+        
+        // Check if we've reached the goal line
+        const reachedGoalLine = (targetGoal.z > 0 && ball.position.z > targetGoal.z - 1) || 
+                             (targetGoal.z < 0 && ball.position.z < targetGoal.z + 1);
+        
+        if (reachedGoalLine && !ball.userData.goalScored) {
+            // Force the ball into the net for visual effect
+            if (targetGoal.z > 0) {
+                ball.position.z = targetGoal.z - 0.5;
+            } else {
+                ball.position.z = targetGoal.z + 0.5;
+            }
+            
+            // Randomly position within goal width for variety
+            ball.position.x = Math.random() * (goalWidth - 1) - (goalWidth/2 - 0.5);
+            ball.position.y = Math.random() * 1.5 + 0.5;
+            
+            // Slow down the ball dramatically for goal effect
+            ball.userData.velocity.multiplyScalar(0.2);
+            
+            // Mark as scored and increase score
+            ball.userData.goalScored = true;
+            score += 10;
+            scoreDisplay.textContent = `SCORE: ${score}`;
+            
+            // Create Ultimate Goal animation
+            const goalAlert = document.createElement('div');
+            goalAlert.style.cssText = `
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0);
+                font-size: 70px;
+                font-weight: bold;
+                color: #ff3366;
+                text-shadow: 0 0 30px rgba(255, 51, 102, 0.9);
+                font-family: 'Arial', sans-serif;
+                z-index: 1000;
+                pointer-events: none;
+            `;
+            goalAlert.textContent = `ULTIMATE GOAL! (${targetGoal.name})`;
+            document.body.appendChild(goalAlert);
+            
+            // Animate goal text with more dramatic effect
+            gsap.to(goalAlert, {
+                scale: 1.2,
+                duration: 0.6,
+                ease: "back.out(1.5)",
+                onComplete: () => {
+                    gsap.to(goalAlert, {
+                        scale: 1.8,
+                        opacity: 0,
+                        y: -70,
+                        duration: 1.5,
+                        delay: 1.2,
+                        onComplete: () => document.body.removeChild(goalAlert)
+                    });
+                }
+            });
+            
+            // Create explosion effect in the goal
+            createGoalExplosionEffect(ball.position.clone());
+            
+            // Respawn ball in the center of the field after delay
+            setTimeout(() => {
+                // Remove ultimate shot flag
+                ball.userData.superShot = false;
+                ball.userData.targetGoal = null;
+                
+                // Reset ball
+                ball.userData.velocity.set(0, 0, 0);
+                ball.userData.spin = 0;
+                
+                // Reset position to center field
+                gsap.to(ball.position, {
+                    x: 0,
+                    y: 1,
+                    z: 0,
+                    duration: 0.8,
+                    ease: "power2.inOut",
+                    onComplete: () => {
+                        // Give it a small bounce
+                        ball.userData.velocity.y = 5;
+                        ball.userData.isMoving = true;
+                        
+                        // Reset goal scored flag
+                        ball.userData.goalScored = false;
+                    }
+                });
+            }, 3000); // Longer delay for ultimate goal celebration
+            
+            return; // Skip regular goal checking
+        }
+    }
+    
+    // For normal shots, use original goal checking
+    originalCheckGoal.apply(this, arguments);
+};
+
+// Modify handleMouseDown to prevent kicking during ultimate
+const originalHandleMouseDown = handleMouseDown;
+handleMouseDown = function(event) {
+    if (ultimateActive) return; // Prevent kick charging during ultimate
+    originalHandleMouseDown(event);
+};
+
+// Modify updatePlayerMovement to prevent movement during ultimate camera sequence
+const originalUpdatePlayerMovement = updatePlayerMovement;
+updatePlayerMovement = function(delta) {
+    if (ultimateActive) return; // Prevent movement during ultimate
+    originalUpdatePlayerMovement(delta);
+};
+
+// Update the animate function to check for ultimate cooldown end
+// FIX: Replace the existing duplicated animate override with a single one
+function checkUltimateCooldown() {
+    // Check if ultimate cooldown just ended
+    if (ultimateCooldown) {
+        const timeRemaining = ultimateCooldownTime - (Date.now() - ultimateCooldownStart);
+        
+        if (timeRemaining <= 0 && !ultimateNotified) {
+            ultimateCooldown = false;
+            updateUltimateUI();
+            showAbilityReadyNotification('Ultimate');
+            ultimateNotified = true;
+            
+            // Play ready sound effect
+            playAbilityReadySound();
+        }
+    }
+}
+
+// Add the cooldown check to the animation loop
+const originalAnimate = animate;
+animate = function() {
+    originalAnimate();
+    checkUltimateCooldown();
+};
+
+// Remove any duplicate declarations of prevAnimate or other animation overrides
+// END FIX
+
+// ...existing code...
