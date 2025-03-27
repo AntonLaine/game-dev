@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Open World Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+        <div id="ui-overlay">
+            <div id="character-info">
+                <h3 id="character-name">No Character Selected</h3>
+                <p id="character-rarity">Rarity: None</p>
+                <div id="abilities-container">
+                    <h4>Abilities:</h4>
+                    <ul id="abilities-list"></ul>
+                </div>
+            </div>
+            <div id="game-controls">
+                <button id="roll-character">Roll Character</button>
+                <button id="toggle-map">Toggle Map</button>
+            </div>
+        </div>
+        <div id="map-overlay" class="hidden">
+            <div id="map-container"></div>
+            <button id="close-map">Close Map</button>
+        </div>
+    </div>
+    
+    <script src="js/character.js"></script>
+    <script src="js/abilities.js"></script>
+    <script src="js/world.js"></script>
+    <script src="js/controls.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
