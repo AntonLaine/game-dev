@@ -1,0 +1,291 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #121212;
+    color: #fff;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #1db954;
+    text-shadow: 0 0 10px rgba(29, 185, 84, 0.5);
+    font-size: 2.5rem;
+}
+
+.controls, .pattern-controls {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 15px;
+    background-color: #282828;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #1db954;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+button:hover {
+    background-color: #1ed760;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+button:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.tempo-control, .sound-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sound-controls {
+    margin-left: 20px;
+}
+
+.tempo-control {
+    margin-left: auto;
+}
+
+input[type="range"], select {
+    cursor: pointer;
+    background-color: #333;
+    border: none;
+    padding: 5px;
+    border-radius: 4px;
+    color: white;
+}
+
+input[type="text"] {
+    padding: 8px;
+    border-radius: 4px;
+    border: none;
+    background-color: #333;
+    color: white;
+}
+
+select {
+    height: 32px;
+}
+
+.instruments-selector {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 15px;
+}
+
+.instrument {
+    padding: 10px 20px;
+    background-color: #333;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex: 1;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.instrument:hover {
+    background-color: #444;
+    transform: translateY(-2px);
+}
+
+.instrument.active {
+    background-color: #1db954;
+    color: white;
+    font-weight: bold;
+}
+
+.timeline {
+    margin-bottom: 15px;
+    background-color: #282828;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.timeline-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.position-indicator {
+    padding: 5px 15px;
+    background-color: #333;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.composition-view {
+    position: relative;
+}
+
+.beat-indicator {
+    display: flex;
+    margin-bottom: 5px;
+    padding-left: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.beat-numbers {
+    display: flex;
+    gap: 5px;
+    overflow-x: hidden;
+}
+
+.beat-number {
+    width: 40px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+}
+
+.beat-number.active {
+    background-color: #1db954;
+    border-radius: 4px 4px 0 0;
+    color: white;
+    font-weight: bold;
+}
+
+.beat-number.bar-start {
+    border-left: 2px solid #1db954;
+}
+
+.grid-container {
+    display: flex;
+    background-color: #282828;
+    border-radius: 8px;
+    padding: 20px;
+    overflow-x: auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    margin-bottom: 20px;
+}
+
+.note-labels {
+    display: flex;
+    flex-direction: column;
+    margin-right: 10px;
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    background-color: #282828;
+}
+
+.note-label {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 10px;
+    font-weight: bold;
+    width: 50px;
+    color: #ddd;
+    font-size: 0.9rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(16, 40px);
+    gap: 5px;
+    transition: transform 0.3s ease;
+}
+
+.cell {
+    width: 40px;
+    height: 40px;
+    background-color: #383838;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.5);
+}
+
+.cell:hover {
+    background-color: #484848;
+    transform: translateY(-2px);
+    box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.1), 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.cell.active {
+    background-color: #1db954;
+    box-shadow: 0 0 10px rgba(29, 185, 84, 0.5);
+}
+
+.cell.playing {
+    box-shadow: 0 0 15px #fff, 0 0 20px rgba(29, 185, 84, 0.8);
+}
+
+/* Add a column indicator for beats */
+.cell[data-beat="0"], .cell[data-beat="4"], .cell[data-beat="8"], .cell[data-beat="12"] {
+    border-left: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.cell.synth.active {
+    background-color: #1db954;
+}
+
+.cell.piano.active {
+    background-color: #1e88e5;
+}
+
+.cell.bass.active {
+    background-color: #d81b60;
+}
+
+/* Bar separator */
+.cell[data-beat="0"] {
+    border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 768px) {
+    .controls, .pattern-controls, .instruments-selector {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .tempo-control, .sound-controls {
+        margin-left: 0;
+        margin-top: 10px;
+        width: 100%;
+    }
+    
+    input[type="range"] {
+        width: 100%;
+    }
+    
+    .instrument {
+        width: 100%;
+    }
+}

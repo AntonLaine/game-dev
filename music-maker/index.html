@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Maker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Music Maker</h1>
+        
+        <div class="controls">
+            <button id="play-btn">Play</button>
+            <button id="stop-btn">Stop</button>
+            <button id="clear-btn">Clear</button>
+            <div class="sound-controls">
+                <label for="wave-type">Sound: </label>
+                <select id="wave-type">
+                    <option value="sine">Sine</option>
+                    <option value="square">Square</option>
+                    <option value="sawtooth">Sawtooth</option>
+                    <option value="triangle">Triangle</option>
+                </select>
+                <label for="volume">Volume: </label>
+                <input type="range" id="volume" min="0" max="100" value="50">
+            </div>
+            <div class="tempo-control">
+                <label for="tempo">Tempo: </label>
+                <span id="tempo-value">120</span> BPM
+                <input type="range" id="tempo" min="60" max="240" value="120">
+            </div>
+        </div>
+        
+        <div class="pattern-controls">
+            <button id="save-btn">Save Pattern</button>
+            <button id="load-btn">Load Pattern</button>
+            <input type="text" id="pattern-name" placeholder="Pattern name">
+            <button id="add-bars-btn">+ Add 4 Bars</button>
+        </div>
+        
+        <div class="instruments-selector">
+            <div class="instrument active" data-instrument="synth">Synth</div>
+            <div class="instrument" data-instrument="piano">Piano</div>
+            <div class="instrument" data-instrument="bass">Bass</div>
+        </div>
+        
+        <div class="timeline">
+            <div class="timeline-controls">
+                <button id="scroll-left">&lt;&lt;</button>
+                <div class="position-indicator">
+                    Bar: <span id="current-bar">1</span>
+                </div>
+                <button id="scroll-right">&gt;&gt;</button>
+            </div>
+        </div>
+        
+        <div class="composition-view">
+            <div class="beat-indicator">
+                <div class="beat-numbers"></div>
+            </div>
+            
+            <div class="grid-container">
+                <div class="note-labels"></div>
+                <div class="grid" id="music-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
