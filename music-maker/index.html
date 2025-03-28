@@ -11,7 +11,7 @@
         <h1>Music Maker</h1>
         
         <div class="controls">
-            <button id="play-btn">Play</button>
+            <button id="play-btn">▶ Play</button>
             <button id="stop-btn">Stop</button>
             <button id="clear-btn">Clear</button>
             <div class="sound-controls">
@@ -43,6 +43,39 @@
             <div class="instrument active" data-instrument="synth">Synth</div>
             <div class="instrument" data-instrument="piano">Piano</div>
             <div class="instrument" data-instrument="bass">Bass</div>
+        </div>
+        
+        <div class="text-to-music-section">
+            <h3>Text to Music</h3>
+            <div class="text-input-controls">
+                <select id="melody-scale">
+                    <option value="major">Major Scale</option>
+                    <option value="minor">Minor Scale</option>
+                    <option value="pentatonic">Pentatonic</option>
+                    <option value="blues">Blues Scale</option>
+                </select>
+                <select id="melody-instrument">
+                    <option value="synth">Synth</option>
+                    <option value="piano">Piano</option>
+                </select>
+            </div>
+            <textarea id="melody-text" placeholder="Enter text to convert to melody..."></textarea>
+            <button id="generate-melody-btn">Generate Melody</button>
+        </div>
+        
+        <div class="lyrics-section">
+            <h3>Lyrics</h3>
+            <div class="lyrics-controls">
+                <select id="voice-select">
+                    <option value="default">Default Voice</option>
+                </select>
+                <button id="add-lyrics-btn">Add Lyrics</button>
+            </div>
+            <textarea id="lyrics-text" placeholder="Enter lyrics for text-to-speech..."></textarea>
+            <div class="lyrics-timeline">
+                <p>Drag lyrics onto the timeline to sync with music:</p>
+                <div id="lyrics-markers"></div>
+            </div>
         </div>
         
         <div class="timeline">
