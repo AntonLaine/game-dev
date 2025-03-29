@@ -132,6 +132,12 @@ const voiceSelect = document.getElementById('voice-select');
 const addLyricsBtn = document.getElementById('add-lyrics-btn');
 const lyricsMarkers = document.getElementById('lyrics-markers');
 
+// DOM Elements for translation
+const translateLyricsCheckbox = document.getElementById('translate-lyrics');
+const translateButton = document.getElementById('translate-btn');
+const languageSelect = document.getElementById('language-select');
+const translatedLyricsArea = document.getElementById('translated-lyrics');
+
 // Update grid columns based on total bars
 function updateGridColumns() {
     const totalBeats = totalBars * beatsPerBar;
@@ -273,6 +279,9 @@ function initializeApp() {
 
     // Populate voice options for text-to-speech
     populateVoiceList();
+    
+    // Initialize translation features
+    initializeTranslation();
 }
 
 // Populate voice list for text-to-speech
@@ -323,12 +332,115 @@ function populateVoiceList() {
     }
 }
 
+// Initialize translation feature
+function initializeTranslation() {
+    // Listen for language changes
+    languageSelect.addEventListener('change', () => {
+        if (translateLyricsCheckbox.checked && lyricsText.value.trim()) {
+            translateLyrics();
+        }
+    });
+    
+    // Listen for translate button clicks
+    translateButton.addEventListener('click', () => {
+        translateLyrics();
+    });
+    
+    // Listen for auto-translate checkbox changes
+    translateLyricsCheckbox.addEventListener('change', () => {
+        if (translateLyricsCheckbox.checked && lyricsText.value.trim()) {
+            translateLyrics();
+        }
+    });
+    
+    // Listen for changes to the lyrics text with a debounce
+    let debounceTimeout;
+    lyricsText.addEventListener('input', () => {
+        if (translateLyricsCheckbox.checked) {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+                translateLyrics();
+            }, 1000); // Wait 1 second after typing stops
+        }
+    });
+}
+
+// Translate lyrics using a translation API
+async function translateLyrics() {
+    const text = lyricsText.value.trim();
+    if (!text) {
+        translatedLyricsArea.value = '';
+        return;
+    }
+    
+    const targetLanguage = languageSelect.value.split('-')[0]; // Get language code (e.g., 'es' from 'es-ES')
+    
+    try {
+        translatedLyricsArea.value = "Translating...";
+        
+        // Use a translation API - this example uses LibreTranslate API
+        // You may need to replace this with another translation service or API key
+        const response = await fetch('https://libretranslate.de/translate', {
+            method: 'POST',
+            body: JSON.stringify({
+                q: text,
+                source: 'en',
+                target: targetLanguage,
+                format: 'text'
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Translation failed with status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        if (data && data.translatedText) {
+            translatedLyricsArea.value = data.translatedText;
+        } else {
+            throw new Error('Translation response format unexpected');
+        }
+    } catch (error) {
+        console.error('Translation error:', error);
+        translatedLyricsArea.value = `Translation error: ${error.message}. Please try again later.`;
+        
+        // Fallback: use a mock translation for demonstration
+        if (targetLanguage !== 'en') {
+            fallbackTranslate(text, targetLanguage);
+        }
+    }
+}
+
+// Fallback mock translation for demonstration purposes
+function fallbackTranslate(text, targetLanguage) {
+    // This is just a demo fallback that adds language-specific prefixes
+    // In a real app, you would use a proper translation service
+    const langPrefixes = {
+        'es': '¡Hola! ',
+        'fr': 'Bonjour! ',
+        'de': 'Guten tag! ',
+        'it': 'Ciao! ',
+        'ja': '今日は! ',
+        'ko': '안녕하세요! ',
+        'zh': '你好! ',
+        'ru': 'Привет! '
+    };
+    
+    const prefix = langPrefixes[targetLanguage] || '';
+    translatedLyricsArea.value = `${prefix}[Translation simulation] ${text}`;
+}
+
 // Drag state
 let isDragging = false;
 let isActivating = false;
+let mouseIsDown = false; // Add this to track mouse button state
 
 function handleCellClick(e) {
-    isDragging = true;
+    mouseIsDown = true;
+    isDragging = false; // Start with no drag
     isActivating = !e.target.classList.contains('active');
     e.target.classList.toggle('active');
     
@@ -344,7 +456,10 @@ function handleCellClick(e) {
 }
 
 function handleCellDrag(e) {
-    if (!isDragging) return;
+    // Only process drag if mouse is down and we've moved (real drag)
+    if (!mouseIsDown) return;
+    
+    isDragging = true; // Now we're officially dragging
     
     // If we're activating cells, only make them active.
     // If we're deactivating, only make them inactive.
@@ -355,6 +470,12 @@ function handleCellDrag(e) {
     } else if (!isActivating && e.target.classList.contains('active')) {
         e.target.classList.remove('active');
     }
+}
+
+// Handle mouse up anywhere on the document
+function handleMouseUp() {
+    mouseIsDown = false;
+    isDragging = false;
 }
 
 // Enhanced piano sound with layered oscillators and better envelope
@@ -720,9 +841,18 @@ function generateMelodyFromText() {
     alert("Melody generated from text! Press Play to hear it.");
 }
 
-// Add lyrics from text
+// Add lyrics from text (updated to use translated text)
 function addLyricsFromText() {
-    const lyricsStr = lyricsText.value.trim();
+    // Get the appropriate text based on translation settings
+    let lyricsStr = lyricsText.value.trim();
+    
+    if (translateLyricsCheckbox.checked && translatedLyricsArea.value.trim() && 
+        translatedLyricsArea.value !== "Translating..." && 
+        !translatedLyricsArea.value.includes("Translation error:")) {
+        // Use the translated text
+        lyricsStr = translatedLyricsArea.value.trim();
+    }
+    
     if (!lyricsStr) {
         alert("Please enter some lyrics text.");
         return;
@@ -982,10 +1112,15 @@ function changeInstrument(instrumentName) {
         return;
     }
     
+    // Reset drag state when changing instruments to prevent issues
+    mouseIsDown = false;
+    isDragging = false;
+    isActivating = false;
+    
     currentInstrument = instrumentName;
     
-    // Update UI
-    instrumentSelectors.forEach(selector => {
+    // Update UI - select the right instrument button
+    document.querySelectorAll('.instrument').forEach(selector => {
         if (selector.dataset.instrument === instrumentName) {
             selector.classList.add('active');
         } else {
@@ -996,24 +1131,23 @@ function changeInstrument(instrumentName) {
     // Update note labels for the new instrument
     createNoteLabels();
     
-    // Hide all cells, then show only those for the current instrument
+    // Clear previous display settings
     document.querySelectorAll('.cell').forEach(cell => {
-        if (cell.dataset.instrument === currentInstrument) {
-            const noteIndex = instruments[currentInstrument].notes.indexOf(cell.dataset.note);
-            const beatIndex = parseInt(cell.dataset.beat);
-            const startBeat = currentBarStart * beatsPerBar;
-            const endBeat = startBeat + (beatsPerBar * 4);
-            
-            // Only show notes that exist in the current instrument and are in the visible range
-            if (noteIndex !== -1 && beatIndex >= startBeat && beatIndex < endBeat) {
-                cell.style.display = 'block';
-            } else {
-                cell.style.display = 'none';
-            }
-        } else {
-            cell.style.display = 'none';
+        cell.style.display = 'none';
+    });
+    
+    // Only show cells for current instrument in the visible range
+    const startBeat = currentBarStart * beatsPerBar;
+    const endBeat = startBeat + (beatsPerBar * 4);
+    
+    document.querySelectorAll(`.cell[data-instrument="${currentInstrument}"]`).forEach(cell => {
+        const beat = parseInt(cell.dataset.beat);
+        if (beat >= startBeat && beat < endBeat) {
+            cell.style.display = 'block';
         }
     });
+    
+    console.log(`Changed to instrument: ${instrumentName}`); // Debugging
 }
 
 // Event listeners
@@ -1046,13 +1180,6 @@ scrollRightBtn.addEventListener('click', () => {
         currentBarStart++;
         updateVisibleBeats();
     }
-});
-
-// Instrument selectors
-instrumentSelectors.forEach(selector => {
-    selector.addEventListener('click', () => {
-        changeInstrument(selector.dataset.instrument);
-    });
 });
 
 tempoSlider.addEventListener('input', (e) => {
@@ -1117,7 +1244,45 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeApp();
     
     // Add mouseup listener to document for drag operations
-    document.addEventListener('mouseup', () => {
-        isDragging = false;
+    document.addEventListener('mouseup', handleMouseUp);
+    
+    // Ensure instrument selectors work - using direct click events
+    document.querySelectorAll('.instrument').forEach(selector => {
+        selector.addEventListener('click', (e) => {
+            const instrumentName = e.currentTarget.dataset.instrument;
+            // Prevent event bubbling that might interfere with the click
+            e.stopPropagation();
+            changeInstrument(instrumentName);
+        });
     });
+});
+
+// Preview button for lyrics
+document.getElementById('preview-lyrics-btn').addEventListener('click', () => {
+    // Get the appropriate text based on translation settings
+    let lyricsStr = lyricsText.value.trim();
+    
+    if (translateLyricsCheckbox.checked && translatedLyricsArea.value.trim() && 
+        translatedLyricsArea.value !== "Translating..." && 
+        !translatedLyricsArea.value.includes("Translation error:")) {
+        // Use the translated text
+        lyricsStr = translatedLyricsArea.value.trim();
+    }
+    
+    if (!lyricsStr) {
+        alert("Please enter some lyrics text to preview.");
+        return;
+    }
+    
+    // Get selected voice
+    const selectedVoice = voiceSelect.value;
+    
+    // Use the text-to-speech API to speak the lyrics
+    speakLyric(lyricsStr, selectedVoice);
+});
+
+// Clear lyrics button
+document.getElementById('clear-lyrics-btn').addEventListener('click', () => {
+    lyricsText.value = '';
+    translatedLyricsArea.value = '';
 });

@@ -347,6 +347,77 @@ select {
     transform: translateX(-50%);
 }
 
+.input-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.translated-output {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#translated-lyrics {
+    background-color: #444;
+    color: #ddd;
+}
+
+.translation-toggle {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: #333;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.translation-toggle input {
+    cursor: pointer;
+}
+
+.primary-btn {
+    background-color: #1db954;
+}
+
+.primary-btn:hover {
+    background-color: #1ed760;
+}
+
+.secondary-btn {
+    background-color: #444;
+}
+
+.secondary-btn:hover {
+    background-color: #555;
+}
+
+.voice-settings, .language-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.lyrics-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.lyrics-segments {
+    margin-top: 15px;
+    width: 100%;
+}
+
+.segments-container {
+    background-color: #333;
+    min-height: 40px;
+    border-radius: 4px;
+    padding: 10px;
+}
+
 @media (max-width: 768px) {
     .controls, .pattern-controls, .instruments-selector,
     .text-input-controls, .lyrics-controls {
