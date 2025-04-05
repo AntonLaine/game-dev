@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mario Jamboree</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="score-display">Stars: <span id="score">0</span></div>
+        <div class="player-info">
+            <div class="player-turn">Current Turn: <span id="current-player">Mario</span></div>
+            <div class="coins">Coins: <span id="coins">0</span></div>
+        </div>
+        <div id="game-board"></div>
+        <div id="dice-container">
+            <div id="dice">1</div>
+            <button id="roll-dice">Roll Dice</button>
+        </div>
+        <div class="controls">
+            <button id="start-button">Start Game</button>
+            <div class="game-over" id="game-over">
+                <h2>Game Over</h2>
+                <p>Winner: <span id="winner">Mario</span></p>
+                <p>Stars collected: <span id="final-score">0</span></p>
+                <button id="restart-button">Play Again</button>
+            </div>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>

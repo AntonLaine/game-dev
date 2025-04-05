@@ -1,0 +1,151 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #5c94fc; /* Mario sky blue */
+    color: white;
+    font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.game-container {
+    position: relative;
+    width: 800px;
+    height: 600px;
+    background-color: #6b8cff;
+    border: 8px solid #ffd700; /* Gold border */
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+#game-board {
+    width: 90%;
+    height: 70%;
+    margin: 20px auto;
+    background-color: #8b5a2b; /* Brown board */
+    border: 4px solid #593d29;
+    border-radius: 10px;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    gap: 2px;
+}
+
+.board-space {
+    background-color: #92cd00; /* Green space */
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+
+.board-space.special {
+    background-color: #ff9c00; /* Orange for special spaces */
+}
+
+.board-space.star {
+    background-color: #ffff00; /* Yellow for star spaces */
+    box-shadow: 0 0 10px #ffff00;
+}
+
+.player-token {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    position: absolute;
+    z-index: 10;
+    transition: all 0.5s ease;
+}
+
+.player-token.mario {
+    background-color: #ff0000; /* Red for Mario */
+}
+
+.player-token.luigi {
+    background-color: #00ff00; /* Green for Luigi */
+}
+
+.player-token.peach {
+    background-color: #ffaec9; /* Pink for Peach */
+}
+
+.player-token.yoshi {
+    background-color: #66cdaa; /* Green-blue for Yoshi */
+}
+
+.score-display, .player-info {
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    margin: 5px;
+    font-size: 18px;
+    z-index: 100;
+}
+
+.player-info {
+    display: flex;
+    justify-content: space-between;
+}
+
+#dice-container {
+    text-align: center;
+    margin: 10px;
+}
+
+#dice {
+    width: 60px;
+    height: 60px;
+    background-color: white;
+    color: black;
+    font-size: 24px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    margin: 0 auto 10px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.controls {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    z-index: 100;
+}
+
+#start-button, #restart-button, #roll-dice {
+    padding: 10px 20px;
+    background-color: #ff5a5f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 4px 0 #b23b3e;
+    transition: all 0.1s;
+}
+
+#start-button:hover, #restart-button:hover, #roll-dice:hover {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #b23b3e;
+}
+
+.game-over {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    display: none;
+    border: 5px solid #ffd700;
+}
